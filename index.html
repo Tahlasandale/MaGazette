@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ma Gazette du Matin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
@@ -34,8 +34,9 @@
     }
     #date {
       font-size: 0.8em;
-      color: #e0e0e0;
+      color: var(--text-color);
       margin-left: 10px;
+      white-space: nowrap;
     }
     button {
       background-color: var(--button-bg);
@@ -47,13 +48,15 @@
       font-weight: bold;
       transition: background 0.2s;
     }
-    button:hover { background-color: var(--button-hover); }
+    button:hover {
+      background-color: var(--button-hover);
+    }
     .section {
       background-color: var(--card-color);
       padding: 15px;
       margin-bottom: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
     .section h2 {
       margin-top: 0;
@@ -72,451 +75,272 @@
       overflow-y: auto;
       white-space: pre-line;
     }
-    .error { color: #f44336; font-weight: bold; }
-    a { color: var(--accent-color); text-decoration: underline; }
+    .error {
+      color: #f44336;
+      font-weight: bold;
+      white-space: normal;
+    }
+    a {
+      color: var(--accent-color);
+      text-decoration: underline;
+      word-break: break-word;
+    }
     @media (max-width: 600px) {
-      h1 { font-size: 1.5em; flex-direction: column; align-items: flex-start; gap: 0; }
-      .section { padding: 10px; }
-      button { padding: 6px 12px; font-size: 0.9em; }
-      .section h2 { font-size: 1.2em; }
-      #date { margin-left: 0; margin-top: 8px;}
+      h1 {
+        font-size: 1.5em;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+      }
+      .section {
+        padding: 10px;
+      }
+      button {
+        padding: 6px 12px;
+        font-size: 0.9em;
+      }
+      .section h2 {
+        font-size: 1.2em;
+      }
+      #date {
+        margin-left: 0;
+        margin-top: 8px;
+      }
     }
   </style>
 </head>
 <body>
-<h1>
-  📬 Ma Gazette du Jour
-  <span id="date"></span>
-  <button onclick="manualRefresh()">🔄 Rafraîchir</button>
-</h1>
+  <h1>
+    📬 Ma Gazette du Jour
+    <span id="date"></span>
+    <button onclick="manualRefresh()">🔄 Rafraîchir</button>
+  </h1>
 
-<div id="gazette">Chargement...</div>
-<div id="logs" class="logs"></div>
+  <div id="gazette">Chargement...</div>
+  <div id="logs" class="logs"></div>
 
-<script>
-const MISTRAL_API_KEY = "4TkJgrGZ19tSwyrRPqYUqgAZh4ttCKmc";
-const weatherCodes = {0:"Ciel clair",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",61:"Pluie faible",95:"Orages"};
+  <script>
+    const MISTRAL_API_KEY = "4TkJgrGZ19tSwyrRPqYUqgAZh4ttCKmc";
+    const weatherCodes = {0:"Ciel clair",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",61:"Pluie faible",95:"Orages"};
 
-function updateDateDisplay() {
-  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-  const today = new Date();
-  document.getElementById("date").innerText = today.toLocaleDateString("fr-FR", options);
-  return today.toLocaleDateString('fr-FR', {year: 'numeric', month: 'long', day: 'numeric'}); // Pour prompt
-}
-
-function log(msg){
-  document.getElementById("logs").innerText += msg + "\n";
-}
-function isToday(dateString){
-  try {
-    const today=new Date();
-    const saved=new Date(dateString);
-    return today.toDateString() === saved.toDateString();
-  } catch {
-    return false;
-  }
-}
-
-// Position
-async function getLocation(){
-  log("📍 Récupération de la position...");
-  return new Promise(resolve=>{
-    let resolved=false;
-    const timer=setTimeout(()=>{if(!resolved){resolved=true;log("⚠️ Timeout → fallback Paris");resolve({lat:48.8566,lon:2.3522});}},5000);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        pos=>{if(!resolved){resolved=true;clearTimeout(timer);log("✅ Position récupérée");resolve({lat:pos.coords.latitude,lon:pos.coords.longitude});}},
-        ()=>{if(!resolved){resolved=true;clearTimeout(timer);log("⚠️ Position refusée → fallback Paris");resolve({lat:48.8566,lon:2.3522});}}
-      );
-    } else {
-      resolved = true;
-      log("⚠️ Géolocalisation non disponible → fallback Paris");
-      resolve({lat:48.8566,lon:2.3522});
+    function updateDateDisplay() {
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString("fr-FR", options);
+      document.getElementById("date").innerText = formattedDate;
+      // Date format jour mois année pour prompt (ex: "22 août 2025")
+      return today.toLocaleDateString("fr-FR", {day: "numeric", month: "long", year: "numeric"});
     }
-  });
-}
 
-// Météo actuelle + prévisions journée
-async function getWeather(lat,lon){
-  log("⛅ Récupération de la météo...");
-  try{
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=1`);
-    if(!res.ok) throw "API météo HS";
-    const data = await res.json();
-    log("✅ Météo récupérée");
-    return data;
-  }catch(e){log("❌ Erreur météo : " + e); return null;}
-}
-
-// Articles tech du jour
-async function getMistralNews(dateStr){
-  log("📰 Récupération des articles (Mistral)...");
-  try {
-    if(!MISTRAL_API_KEY) throw "⚠️ Clé API manquante";
-    // Prompt avec date dynamique
-    const prompt = `Pour chaque article ci-dessous, fais d'abord une recherche web sur les actualités du ${dateStr} avant de rédiger. Génère une gazette tech courte en français. Sujets : korben, Raspberry Pi, ricing Linux, UXN, nouveaux PC/Mac, cyberdecks. Style clair et concis, 3 à 5 articles. Cite les sources pour chaque news.`;
-    const res = await fetch("https://api.mistral.ai/v1/chat/completions",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer " + MISTRAL_API_KEY
-      },
-      body:JSON.stringify({
-        model:"mistral-medium",
-        messages:[{role:"user",content: prompt}]
-      }),
-    });
-    if(!res.ok) throw "Erreur API Mistral: "+await res.text();
-    const data = await res.json();
-    // Gestion du contenu
-    if (data.choices && data.choices[0] && data.choices[0].message && typeof data.choices[0].message.content === "string") {
-      log("✅ Articles récupérés");
-      return data.choices[0].message.content;
-    } else {
-      throw "Réponse Mistral invalide";
+    function log(msg){
+      const logs = document.getElementById("logs");
+      logs.innerText += msg + "\n";
+      logs.scrollTop = logs.scrollHeight;
+      console.log(msg);
     }
-  }catch(e){log("❌ Erreur articles : "+e); return "❌ Pas d’articles disponibles aujourd’hui.";}
-}
+    function isToday(dateString){
+      try {
+        const today = new Date();
+        const saved = new Date(dateString);
+        return today.toDateString() === saved.toDateString();
+      } catch {
+        return false;
+      }
+    }
 
-function buildWeatherSection(weather){
-  let html = `<div class="section"><h2>Météo</h2>❌ Indisponible</div>`;
-  try {
-    if(weather && weather.current_weather && weather.hourly && weather.hourly.time) {
-      const current = weather.current_weather;
-      const description = weatherCodes[current.weathercode] || "Météo inconnue";
-      html =
-        `<div class="section"><h2>Météo</h2>
-          <strong>Maintenant</strong> : 🌡️ ${current.temperature}°C&nbsp;&nbsp;
-          💨 Vent: ${current.windspeed} km/h&nbsp;&nbsp;
-          ⛅ ${description}<br>
+    async function getLocation(){
+      log("📍 Récupération de la position...");
+      return new Promise(resolve => {
+        let resolved = false;
+        const timer = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            log("⚠️ Timeout → fallback Paris");
+            resolve({lat:48.8566, lon:2.3522});
+          }
+        }, 5000);
+
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              if (!resolved) {
+                resolved = true;
+                clearTimeout(timer);
+                log("✅ Position récupérée");
+                resolve({lat: pos.coords.latitude, lon: pos.coords.longitude});
+              }
+            },
+            () => {
+              if (!resolved) {
+                resolved = true;
+                clearTimeout(timer);
+                log("⚠️ Position refusée → fallback Paris");
+                resolve({lat:48.8566, lon:2.3522});
+              }
+            },
+            {timeout: 4500}
+          );
+        } else {
+          resolved = true;
+          log("⚠️ Géolocalisation non disponible → fallback Paris");
+          resolve({lat:48.8566, lon:2.3522});
+        }
+      });
+    }
+
+    async function getWeather(lat, lon){
+      log("⛅ Récupération de la météo...");
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+                    `&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=1&timezone=Europe/Paris`;
+        const res = await fetch(url);
+        if (!res.ok) throw `API météo erreur ${res.status}`;
+        const data = await res.json();
+        log("✅ Météo récupérée");
+        return data;
+      } catch(e) {
+        log("❌ Erreur météo : " + e);
+        return null;
+      }
+    }
+
+    async function getMistralNews(dateStr){
+      log("📰 Récupération des articles (Mistral)...");
+      try {
+        if (!MISTRAL_API_KEY) throw "⚠️ Clé API manquante";
+        const prompt = `Pour chaque article ci-dessous, fais d'abord une recherche web sur les actualités du ${dateStr} avant de rédiger.` +
+          `Génère une gazette tech courte en français. Sujets : korben, Raspberry Pi, ricing Linux, UXN, nouveaux PC/Mac, cyberdecks.` +
+          `Style clair et concis, 3 à 5 articles. Cite les sources pour chaque news.`;
+
+        const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + MISTRAL_API_KEY
+          },
+          body: JSON.stringify({
+            model: "mistral-medium",
+            messages: [{role:"user", content:prompt}]
+          })
+        });
+
+        if (!res.ok) throw `Erreur API Mistral: ${res.status}`;
+        const data = await res.json();
+
+        if (data.choices && Array.isArray(data.choices) && data.choices.length && data.choices[0].message && typeof data.choices.message.content === "string") {
+          log("✅ Articles récupérés");
+          return data.choices.message.content;
+        } else {
+          throw "Réponse Mistral invalide";
+        }
+      } catch(e) {
+        log("❌ Erreur articles : " + e);
+        return "❌ Pas d’articles disponibles aujourd’hui.";
+      }
+    }
+
+    function buildWeatherSection(weather) {
+      if (!weather || !weather.current_weather || !weather.hourly || !Array.isArray(weather.hourly.time)) {
+        return `<div class="section"><h2>Météo</h2><p>❌ Indisponible</p></div>`;
+      }
+
+      try {
+        const current = weather.current_weather;
+        const description = weatherCodes[current.weathercode] || "Météo inconnue";
+        let html = `<div class="section"><h2>Météo</h2>
+          <strong>Maintenant</strong> : 🌡️ ${current.temperature}°C&nbsp;&nbsp;💨 Vent: ${current.windspeed} km/h&nbsp;&nbsp;⛅ ${description}<br>
           <small>⏰ ${new Date(current.time).toLocaleTimeString("fr-FR")}</small>
-          <h3 style="margin-top:16px;">Prévisions aujourd'hui :</h3>
-        `;
+          <h3 style="margin-top: 16px;">Prévisions aujourd'hui :</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px;">`;
 
-      // Prévisions toutes les 3h, affichage propre
-      html += `<div style="display: flex; flex-wrap: wrap; gap: 10px;">`;
-      for (let i=0; i<weather.hourly.time.length; i+=3) {
-        const hour = new Date(weather.hourly.time[i]).toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"});
-        html += `<div style="flex:1; min-width:90px;">
-          ${hour} : ${weather.hourly.temperature_2m[i]}°C<br>
-          ${weatherCodes[weather.hourly.weathercode[i]] || "?"}
-        </div>`;
+        for (let i = 0; i < weather.hourly.time.length; i += 3) {
+          const hourStr = new Date(weather.hourly.time[i]).toLocaleTimeString("fr-FR", {hour: "2-digit", minute: "2-digit"});
+          const temp = weather.hourly.temperature_2m[i];
+          const wcode = weather.hourly.weathercode[i];
+          const desc = weatherCodes[wcode] || "?";
+          html += `<div style="min-width: 90px; flex: 1 1 90px;">
+            <strong>${hourStr}</strong><br/>
+            ${temp}°C<br/>
+            ${desc}
+          </div>`;
+        }
+        html += `</div></div>`;
+        return html;
+
+      } catch (err) {
+        return `<div class="section"><h2>Météo</h2><p>❌ Erreur d'affichage météo.</p></div>`;
       }
-      html += "</div></div>";
     }
-  } catch (err){
-    html = `<div class="section"><h2>Météo</h2>❌ Erreur d'affichage météo.</div>`;
-  }
-  return html;
-}
 
-async function generateGazette(){
-  try{
-    const dateStr = updateDateDisplay();
-    document.getElementById("gazette").innerHTML="⏳ Génération en cours...";
-    document.getElementById("logs").innerText="";
+    async function generateGazette() {
+      try {
+        // Affiche la date et récupère la date formatée pour prompt
+        const dateStr = updateDateDisplay();
 
-    const loc = await getLocation();
-    if(!loc.lat || !loc.lon){
-      throw "Coordonnées manquantes";
-    }
-    const weather = await getWeather(loc.lat, loc.lon);
+        document.getElementById("gazette").innerHTML = "⏳ Génération en cours...";
+        document.getElementById("logs").innerText = "";
 
-    const news = await getMistralNews(dateStr);
+        const loc = await getLocation();
+        if (!loc.lat || !loc.lon) throw "Coordonnées manquantes";
 
-    const meteoHtml = buildWeatherSection(weather);
-    let formattedNews;
-    try {
-      formattedNews = marked.parse(news || "");
-    } catch(e){
-      formattedNews = `<div class="error">Erreur d'affichage articles</div>`;
-    }
-    const content = `${meteoHtml}<div class="section"><h2>Articles</h2>${formattedNews}</div>`;
-    document.getElementById("gazette").innerHTML = content;
+        const weather = await getWeather(loc.lat, loc.lon);
+        const news = await getMistralNews(dateStr);
 
-    localStorage.setItem("gazette",JSON.stringify({date:new Date(),content}));
-    notifyUser("Nouvelle gazette disponible !");
-  }catch(e){
-    document.getElementById("gazette").innerHTML = `<div class="section error">${e}</div>`;
-  }
-}
+        const meteoHtml = buildWeatherSection(weather);
+        let formattedNews;
+        try {
+          formattedNews = marked.parse(news || "");
+        } catch {
+          formattedNews = `<div class="error">Erreur d'affichage des articles.</div>`;
+        }
 
-function notifyUser(msg){
-  if("Notification" in window){
-    if(Notification.permission === "granted") new Notification("Gazette",{body:msg});
-  }
-}
+        const content = `${meteoHtml}<div class="section"><h2>Articles</h2>${formattedNews}</div>`;
+        document.getElementById("gazette").innerHTML = content;
 
-async function init(){
-  updateDateDisplay();
-  if("Notification" in window && Notification.permission!=="granted") await Notification.requestPermission();
-  let saved;
-  try {
-    saved = JSON.parse(localStorage.getItem("gazette")||"{}");
-  } catch { saved = {}; }
-  if(saved.date && isToday(saved.date)){
-    document.getElementById("gazette").innerHTML = saved.content;
-  }else{
-    await generateGazette();
-  }
-  setInterval(()=>{
-    const now=new Date();
-    if(now.getHours()===7 && now.getMinutes()===0) generateGazette();
-  },60000);
-}
-
-async function manualRefresh(){
-  await generateGazette();
-  alert("La gazette a été rafraîchie !");
-}
-
-window.addEventListener("DOMContentLoaded", () => { init(); }); // DOM ready
-
-</script>
-</body>
-</html>
-      color: #e0e0e0;
-    }
-    button {
-      background-color: var(--button-bg);
-      border: none;
-      color: var(--accent-color);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-    button:hover { background-color: var(--button-hover); }
-    .section {
-      background-color: var(--card-color);
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    .section h2 {
-      margin-top: 0;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5em;
-      color: var(--accent-color);
-    }
-    .logs {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.9em;
-      color: #aaa;
-      background-color: #222;
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 200px;
-      overflow-y: auto;
-      white-space: pre-line;
-    }
-    .error { color: #f44336; font-weight: bold; }
-    a { color: var(--accent-color); text-decoration: underline; }
-    @media (max-width: 600px) {
-      h1 { font-size: 1.5em; }
-      .section { padding: 10px; }
-      button { padding: 6px 12px; font-size: 0.9em; }
-      .section h2 { font-size: 1.2em; }
-    }
-  </style>
-</head>
-<body>
-<h1>
-  📬 Ma Gazette du Jour
-  <span id="date"></span>
-  <button onclick="manualRefresh()">🔄 Rafraîchir</button>
-</h1>
-
-<div id="gazette">Chargement...</div>
-<div id="logs" class="logs"></div>
-
-<script>
-const MISTRAL_API_KEY = "4TkJgrGZ19tSwyrRPqYUqgAZh4ttCKmc";
-const weatherCodes = {0:"Ciel clair",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",61:"Pluie faible",95:"Orages"};
-
-function updateDate() {
-  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-  const today = new Date();
-  document.getElementById("date").innerText = today.toLocaleDateString("fr-FR", options);
-}
-
-function log(msg){document.getElementById("logs").innerText+=msg+"\n";console.log(msg);}
-function isToday(dateString){const today=new Date();const saved=new Date(dateString);return today.toDateString()===saved.toDateString();}
-
-async function getLocation(){
-  log("📍 Récupération de la position...");
-  return new Promise(resolve=>{
-    let resolved=false;
-    const timer=setTimeout(()=>{if(!resolved){resolved=true;log("⚠️ Timeout → fallback Paris");resolve({lat:48.8566,lon:2.3522});}},5000);
-    navigator.geolocation.getCurrentPosition(
-      pos=>{if(!resolved){resolved=true;clearTimeout(timer);log("✅ Position récupérée");resolve({lat:pos.coords.latitude,lon:pos.coords.longitude});}},
-      ()=>{if(!resolved){resolved=true;clearTimeout(timer);log("⚠️ Position refusée → fallback Paris");resolve({lat:48.8566,lon:2.3522});}}
-    );
-  });
-}
-
-// Météo actuelle + prévisions journée
-async function getWeather(lat,lon){
-  log("⛅ Récupération de la météo...");
-  try{
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=1`);
-    const data = await res.json();
-    log("✅ Météo récupérée");
-    return data;
-  }catch(e){log("❌ Erreur météo"); return null;}
-}
-
-async function getMistralNews(){
-  log("📰 Récupération des articles (Mistral)...");
-  try{
-    if(!MISTRAL_API_KEY) throw "⚠️ Clé API manquante";
-    const res = await fetch("https://api.mistral.ai/v1/chat/completions",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":"Bearer "+MISTRAL_API_KEY},
-      body:JSON.stringify({
-        model:"mistral-medium",
-        messages:[{role:"user",content:`Pour chaque article, fais une recherche d'actualité sur le web aujourd'hui avant de rédiger. Génère une gazette tech courte en français. Sujets : korben, Raspberry Pi, ricing Linux, UXN, nouveaux PC/Mac, cyberdecks. Style clair et concis, avec 3-5 articles, et cite les sources à chaque fois.`}]
-      }),
-    });
-    if(!res.ok) throw "Erreur API Mistral: "+await res.text();
-    const data = await res.json();
-    log("✅ Articles récupérés");
-    return data.choices[0].message.content;
-  }catch(e){log("❌ Erreur articles : "+e); return "❌ Pas d’articles disponibles aujourd’hui.";}
-}
-
-async function generateGazette(){
-  try{
-    updateDate();
-    document.getElementById("gazette").innerHTML="⏳ Génération en cours...";
-    document.getElementById("logs").innerText="";
-    const loc = await getLocation();
-    const weather = await getWeather(loc.lat, loc.lon);
-    const news = await getMistralNews();
-
-    // Météo actuelle + prévisions
-    let meteoHtml = `<div class="section"><h2>Météo</h2>❌ Indisponible</div>`;
-    if(weather && weather.current_weather && weather.hourly && weather.hourly.time) {
-      const current = weather.current_weather;
-      const description = weatherCodes[current.weathercode] || "Météo inconnue";
-      meteoHtml = `<div class="section"><h2>Météo</h2>
-        🌡️ ${current.temperature}°C<br>
-        💨 Vent: ${current.windspeed} km/h<br>
-        ⛅ ${description}<br>
-        ⏰ ${new Date(current.time).toLocaleTimeString("fr-FR")}<br>
-        <h3>Prévisions aujourd'hui :</h3>`;
-      for (let i=0; i<weather.hourly.time.length; i+=3) {
-        const hour = new Date(weather.hourly.time[i]).toLocaleTimeString("fr-FR",{hour:"2-digit"});
-        meteoHtml += `${hour}h : ${weather.hourly.temperature_2m[i]}°C, ${weatherCodes[weather.hourly.weathercode[i]] || "?"}<br>`;
+        localStorage.setItem("gazette", JSON.stringify({date: new Date(), content}));
+        notifyUser("Nouvelle gazette disponible !");
+      } catch(e) {
+        document.getElementById("gazette").innerHTML = `<div class="section error">${e.toString()}</div>`;
       }
-      meteoHtml += "</div>";
     }
 
-    const formattedNews = marked.parse(news);
-    const content = `${meteoHtml}<div class="section"><h2>Articles</h2>${formattedNews}</div>`;
-    document.getElementById("gazette").innerHTML = content;
-    localStorage.setItem("gazette",JSON.stringify({date:new Date(),content}));
-    notifyUser("Nouvelle gazette disponible !");
-  }catch(e){document.getElementById("gazette").innerHTML=`<div class="error">${e}</div>`;}
-}
-
-function notifyUser(msg){
-  if(Notification.permission==="granted") new Notification("Gazette",{body:msg});
-}
-
-async function init(){
-  updateDate();
-  if(Notification.permission!=="granted") await Notification.requestPermission();
-  const saved = JSON.parse(localStorage.getItem("gazette")||"{}");
-  if(saved.date && isToday(saved.date)) document.getElementById("gazette").innerHTML = saved.content;
-  else await generateGazette();
-  setInterval(()=>{
-    const now=new Date();
-    if(now.getHours()===7 && now.getMinutes()===0) generateGazette();
-  },60000);
-}
-
-async function manualRefresh(){
-  await generateGazette();
-  alert("La gazette a été rafraîchie !");
-}
-
-init();
-</script>
-</body>
-</html>
-
-    );
-  });
-}
-
-async function getWeather(lat,lon){
-  log("⛅ Récupération de la météo...");
-  try{
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-    const data = await res.json();
-    log("✅ Météo récupérée");
-    return data.current_weather;
-  }catch(e){log("❌ Erreur météo"); return null;}
-}
-
-async function getMistralNews(){
-  log("📰 Récupération des articles (Mistral)...");
-  try{
-    if(!MISTRAL_API_KEY) throw "⚠️ Clé API manquante";
-    const res = await fetch("https://api.mistral.ai/v1/chat/completions",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":"Bearer "+MISTRAL_API_KEY},
-      body:JSON.stringify({model:"mistral-medium",messages:[{role:"user",content:`Génère une courte gazette tech du jour en français. Sujets : korben, Raspberry Pi, ricing Linux, UXN, nouveaux PC/Mac, cyberdecks. Style clair et concis, avec 3-5 articles.`}]}),
-    });
-    if(!res.ok) throw "Erreur API Mistral: "+await res.text();
-    const data = await res.json();
-    log("✅ Articles récupérés");
-    return data.choices[0].message.content;
-  }catch(e){log("❌ Erreur articles : "+e); return "❌ Pas d’articles disponibles aujourd’hui.";}
-}
-
-async function generateGazette(){
-  try{
-    document.getElementById("gazette").innerHTML="⏳ Génération en cours...";
-    document.getElementById("logs").innerText="";
-    const loc = await getLocation();
-    const weather = await getWeather(loc.lat, loc.lon);
-    const news = await getMistralNews();
-
-    let meteoHtml=`<div class="section"><h2>Météo</h2>❌ Indisponible</div>`;
-    if(weather){
-      const description = weatherCodes[weather.weathercode] || "Météo inconnue";
-      meteoHtml = `<div class="section"><h2>Météo</h2>
-        🌡️ ${weather.temperature}°C<br>
-        💨 Vent: ${weather.windspeed} km/h<br>
-        ⛅ ${description}<br>
-        ⏰ ${new Date(weather.time).toLocaleTimeString("fr-FR")}
-      </div>`;
+    function notifyUser(msg) {
+      if ("Notification" in window) {
+        if (Notification.permission === "granted") {
+          new Notification("Gazette", {body: msg});
+        }
+      }
     }
 
-    const formattedNews = marked.parse(news); // ✅ marked.js parse tout correctement
-    const content = `${meteoHtml}<div class="section"><h2>Articles</h2>${formattedNews}</div>`;
-    document.getElementById("gazette").innerHTML = content;
-    localStorage.setItem("gazette",JSON.stringify({date:new Date(),content}));
-    notifyUser("Nouvelle gazette disponible !");
-  }catch(e){document.getElementById("gazette").innerHTML=`<div class="error">${e}</div>`;}
-}
+    async function init() {
+      updateDateDisplay();
+      if ("Notification" in window && Notification.permission !== "granted") {
+        await Notification.requestPermission();
+      }
 
-function notifyUser(msg){if(Notification.permission==="granted") new Notification("Gazette",{body:msg});}
+      let saved = {};
+      try {
+        saved = JSON.parse(localStorage.getItem("gazette") || "{}");
+      } catch {}
 
-async function init(){
-  if(Notification.permission!=="granted") await Notification.requestPermission();
-  const saved = JSON.parse(localStorage.getItem("gazette")||"{}");
-  if(saved.date && isToday(saved.date)) document.getElementById("gazette").innerHTML = saved.content;
-  else await generateGazette();
-  setInterval(()=>{const now=new Date();if(now.getHours()===7 && now.getMinutes()===0) generateGazette();},60000);
-}
+      if (saved.date && isToday(saved.date)) {
+        document.getElementById("gazette").innerHTML = saved.content;
+      } else {
+        await generateGazette();
+      }
 
-async function manualRefresh(){await generateGazette(); alert("La gazette a été rafraîchie !");}
-init();
-</script>
+      setInterval(() => {
+        const now = new Date();
+        if (now.getHours() === 7 && now.getMinutes() === 0) generateGazette();
+      }, 60000);
+    }
+
+    async function manualRefresh() {
+      await generateGazette();
+      alert("La gazette a été rafraîchie !");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => { init(); });
+  </script>
 </body>
 </html>
