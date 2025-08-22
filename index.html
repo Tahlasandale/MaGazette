@@ -206,72 +206,7 @@ init();
 </script>
 </body>
 </html>
-      color: var(--accent-color);
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.2s;
-    }
-    button:hover { background-color: var(--button-hover); }
-    .section {
-      background-color: var(--card-color);
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    }
-    .section h2 {
-      margin-top: 0;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.5em;
-      color: var(--accent-color);
-    }
-    .logs {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.9em;
-      color: #aaa;
-      background-color: #222;
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 200px;
-      overflow-y: auto;
-      white-space: pre-line;
-    }
-    .error { color: #f44336; font-weight: bold; }
-    a { color: var(--accent-color); text-decoration: underline; }
-    @media (max-width: 600px) {
-      h1 { font-size: 1.5em; }
-      .section { padding: 10px; }
-      button { padding: 6px 12px; font-size: 0.9em; }
-      .section h2 { font-size: 1.2em; }
-    }
-  </style>
-</head>
-<body>
-<h1>
-  📬 Ma Gazette du Jour
-  <button onclick="manualRefresh()">🔄 Rafraîchir</button>
-</h1>
 
-<div id="gazette">Chargement...</div>
-<div id="logs" class="logs"></div>
-
-<script>
-const MISTRAL_API_KEY = "4TkJgrGZ19tSwyrRPqYUqgAZh4ttCKmc";
-const weatherCodes = {0:"Ciel clair",2:"Partiellement nuageux",3:"Couvert",45:"Brouillard",61:"Pluie faible",95:"Orages"};
-
-function log(msg){document.getElementById("logs").innerText+=msg+"\n";console.log(msg);}
-function isToday(dateString){const today=new Date();const saved=new Date(dateString);return today.toDateString()===saved.toDateString();}
-
-async function getLocation(){
-  log("📍 Récupération de la position...");
-  return new Promise(resolve=>{
-    let resolved=false;
-    const timer=setTimeout(()=>{if(!resolved){resolved=true;log("⚠️ Timeout → fallback Paris");resolve({lat:48.8566,lon:2.3522});}},5000);
-    navigator.geolocation.getCurrentPosition(
-      pos=>{if(!resolved){resolved=true;clearTimeout(timer);log("✅ Position récupérée");resolve({lat:pos.coords.latitude,lon:pos.coords.longitude});}},
-      ()=>{if(!resolved){resolved=true;clearTimeout(timer);log("⚠️ Position refusée → fallback Paris");resolve({lat:48.8566,lon:2.3522});}}
     );
   });
 }
