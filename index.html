@@ -209,8 +209,8 @@
       try {
         if (!MISTRAL_API_KEY) throw "⚠️ Clé API manquante";
         const prompt = `Pour chaque article ci-dessous, fais d'abord une recherche web sur les actualités du ${dateStr} avant de rédiger.` +
-          `Génère une gazette tech courte en français. Sujets : korben, Raspberry Pi, ricing Linux, UXN, nouveaux PC/Mac, cyberdecks.` +
-          `Style clair et concis, 3 à 5 articles. Cite les sources pour chaque news.`;
+                       `Génère une gazette tech courte en français. Sujets : korben, Raspberry Pi, ricing Linux, UXN, nouveaux PC/Mac, cyberdecks.` +
+                       `Style clair et concis, 3 à 5 articles. Cite les sources pour chaque news.`;
 
         const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
           method: "POST",
@@ -225,14 +225,20 @@
         });
 
         if (!res.ok) throw `Erreur API Mistral: ${res.status}`;
-        const data = await res.json();
 
-        if (data.choices && Array.isArray(data.choices) && data.choices.length && data.choices[0].message && typeof data.choices.message.content === "string") {
-          log("✅ Articles récupérés");
-          return data.choices.message.content;
-        } else {
-          throw "Réponse Mistral invalide";
+        const data = await res.json();
+        log("Réponse complète API Mistral : " + JSON.stringify(data));
+
+        if (data.choices && data.choices.length > 0) {
+          if (data.choices[0].message && typeof data.choices[0].message.content === "string") {
+            log("✅ Articles récupérés");
+            return data.choices[0].message.content;
+          } else if (typeof data.choices[0].text === "string") {
+            log("✅ Articles récupérés (fallback text)");
+            return data.choices[0].text;
+          }
         }
+        throw "Réponse Mistral invalide ou manquante";
       } catch(e) {
         log("❌ Erreur articles : " + e);
         return "❌ Pas d’articles disponibles aujourd’hui.";
