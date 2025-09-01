@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>To-Do List Minimaliste - Persistance ordre</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 { font-size: 1.8rem; margin-bottom: 1.5rem; }
+    form {
+      width: 100%; max-width: 400px;
+      display: flex; gap: 0.5rem; margin-bottom: 2rem;
+    }
+    input[type="text"] {
+      flex: 1; padding: 0.6rem;
+      border: 1px solid #fff; border-radius: 4px;
+      background: #000; color: #fff;
+    }
+    button {
+      background: #fff; color: #000; border: none;
+      padding: 0.6rem 1rem; border-radius: 4px;
+      cursor: pointer; font-weight: bold;
+    }
+    ul {
+      list-style: none; padding: 0;
+      width: 100%; max-width: 400px;
+    }
+    li {
+      border-bottom: 1px solid #555;
+      padding: 0.6rem 0;
+      display: flex; align-items: center;
+      gap: 0.75rem;
+      cursor: grab;
+    }
+    li.dragging { opacity: 0.5; }
+    li label { flex: 1; cursor: pointer; user-select: none; }
+    .counter { margin-bottom: 1rem; opacity: 0.8; }
+  </style>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // ✅ TES VALEURS EXISTANTES
+    const SUPABASE_URL = "https://xcawojxvtxdcnwkhywmn.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let tasks = [];
+    let completedCount = 0;
+
+    async function loadTasks() {
+      console.log("[LOAD] Tâches...");
+      try {
+        const { data, error } = await supabase
+          .from("todo")
+          .select("id, content, done, position")
+          .eq("done", false)
+          .order("position", { ascending: true });
+
+        if (error) throw error;
+        tasks = data || [];
+
+        // compteur terminées
+        const { count } = await supabase
+          .from("todo")
+          .select("id", { count: "exact", head: true })
+          .eq("done", true);
+
+        completedCount = count || 0;
+        render();
+      } catch (err) {
+        console.error("[LOAD] Erreur:", err);
+      }
+    }
+
+    function render() {
+      const list = document.getElementById("tasks");
+      const counter = document.getElementById("counter");
+      counter.textContent = `Tâches terminées : ${completedCount}`;
+
+      if (!tasks.length) {
+        list.innerHTML = "<li>Aucune tâche à faire 🎉</li>";
+        return;
+      }
+
+      list.innerHTML = tasks.map(
+        t => `
+          <li draggable="true" data-id="${t.id}">
+            <input type="checkbox" data-id="${t.id}">
+            <label>${t.content}</label>
+          </li>`
+      ).join("");
+
+      // Checkbox handler
+      document.querySelectorAll('#tasks input[type="checkbox"]').forEach(cb => {
+        cb.onchange = async (e) => {
+          const id = e.target.dataset.id;
+          console.log("[CHECK] id=", id);
+          try {
+            const { error } = await supabase
+              .from("todo")
+              .update({ done: true })
+              .eq("id", id);
+            if (error) throw error;
+            loadTasks();
+          } catch (err) {
+            console.error("[UPDATE] Erreur:", err);
+          }
+        };
+      });
+
+      // Drag & Drop
+      setupDragAndDrop();
+    }
+
+    async function addTask(content) {
+      try {
+        // trouver la position max actuelle
+        const maxPos = tasks.length ? Math.max(...tasks.map(t => t.position || 0)) : 0;
+        const newPos = maxPos + 1;
+
+        const { error } = await supabase
+          .from("todo")
+          .insert([{ content, done: false, position: newPos }]);
+
+        if (error) throw error;
+        loadTasks();
+      } catch (err) {
+        console.error("[INSERT] Erreur:", err);
+      }
+    }
+
+    function setupDragAndDrop() {
+      const list = document.getElementById("tasks");
+      let dragging;
+
+      list.querySelectorAll("li").forEach(li => {
+        li.addEventListener("dragstart", () => {
+          dragging = li;
+          li.classList.add("dragging");
+        });
+        li.addEventListener("dragend", async () => {
+          li.classList.remove("dragging");
+          dragging = null;
+
+          // Sauvegarder nouvel ordre en DB
+          const ids = Array.from(list.children).map((li, i) => ({
+            id: li.dataset.id,
+            pos: i + 1
+          }));
+          console.log("[DRAG] Nouvel ordre:", ids);
+
+          for (const item of ids) {
+            await supabase.from("todo").update({ position: item.pos }).eq("id", item.id);
+          }
+          loadTasks();
+        });
+        li.addEventListener("dragover", e => {
+          e.preventDefault();
+          const target = li;
+          if (target === dragging) return;
+          const rect = target.getBoundingClientRect();
+          const next = (e.clientY - rect.top) / rect.height > 0.5;
+          list.insertBefore(dragging, next ? target.nextSibling : target);
+        });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("form").onsubmit = (e) => {
+        e.preventDefault();
+        const content = document.getElementById("content").value.trim();
+        if (content) addTask(content);
+        e.target.reset();
+      };
+      loadTasks();
+    });
+  </script>
+</head>
+<body>
+  <h1>📝 To-Do List Minimaliste</h1>
+  <div id="counter" class="counter">Tâches terminées : 0</div>
+  <form id="form" autocomplete="off">
+    <input type="text" id="content" placeholder="Nouvelle tâche..." />
+    <button type="submit">Ajouter</button>
+  </form>
+  <ul id="tasks"></ul>
+</body>
+</html>
