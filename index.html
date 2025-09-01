@@ -6,757 +6,128 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://unpkg.com/nes.css/css/nes.min.css" rel="stylesheet" />
   <style>
-    body {
-      margin: 1rem;
-      background: #121212;
-      color: #e0e0e0;
-      font-family: 'Space Mono', monospace;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    section {
-      margin: 1.5rem 0;
-    }
-    .task-list {
-      list-style: none;
-      padding: 0;
-    }
-    .task-item {
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-      cursor: grab;
-    }
-    .completed {
-      text-decoration: line-through;
-      color: grey;
-    }
-    .flex {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .progress-bar {
-      width: 100%;
-      background: #444;
-      height: 1rem;
-      margin-top: 0.5rem;
-    }
-    .progress {
-      height: 100%;
-      background: #33f;
-    }
-    .gazette {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    @media (max-width: 768px) {
-      .gazette {
-        grid-template-columns: 1fr;
-      }
-    }
-    a {
-      color: #81d4fa;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    h3 {
-      margin-top: 1rem;
-      font-family: 'Orbitron', sans-serif;
-      color: #4fc3f7;
-      font-weight: 700;
-    }
-    /* Weather card styling */
-    .weather-card {
-      background: #1e1e1e;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-      font-size: 0.9rem;
-    }
-    .weather-now {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    .forecast-hours {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
-    }
-    .forecast-hour {
-      flex: 1 1 80px;
-      background: #292929;
-      border-radius: 8px;
-      padding: 0.5rem;
-      text-align: center;
-    }
-    .logs {
-      font-size: 0.8rem;
-      max-height: 120px;
-      overflow-y: auto;
-      background: #1e1e1e;
-      padding: 0.5rem;
-      border-radius: 8px;
-      font-family: monospace;
-      margin-top: 0.8rem;
-      white-space: pre-line;
-      user-select: text;
-    }
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 0.8rem;
-      color: #666;
-    }
-    /* Pomodoro buttons */
-    .pomodoro-controls button {
-      min-width: 60px;
-      margin-right: 5px;
-    }
-    /* RSS News Styles */
-    .news-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding: 0.8rem;
-      background: #1e1e1e;
-      border-radius: 8px;
-      font-size: 0.8rem;
-    }
-    .news-controls select,
-    .news-controls input {
-      font-size: 0.7rem;
-      padding: 0.3rem;
-      background: #333;
-      color: #e0e0e0;
-      border: 1px solid #555;
-      border-radius: 4px;
-      max-width: 100px;
-    }
-    .news-controls button {
-      font-size: 0.7rem;
-      padding: 0.3rem 0.6rem;
-    }
-    .news-container {
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 0.5rem;
-    }
-    .source-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #4fc3f7;
-      margin: 1rem 0 0.5rem 0;
-      padding-bottom: 0.2rem;
-      border-bottom: 1px solid #555;
-    }
-    .news-item {
-      background: #1e1e1e;
-      padding: 0.8rem;
-      margin-bottom: 0.8rem;
-      border-radius: 8px;
-      border-left: 3px solid #4fc3f7;
-    }
-    .news-item h4 {
-      margin: 0 0 0.3rem 0;
-      font-size: 0.85rem;
-      line-height: 1.2;
-    }
-    .news-item h4 a {
-      color: #81d4fa;
-      text-decoration: none;
-    }
-    .news-item h4 a:hover {
-      text-decoration: underline;
-    }
-    .news-meta {
-      font-size: 0.7rem;
-      color: #999;
-      margin-bottom: 0.3rem;
-    }
-    .news-description {
-      font-size: 0.75rem;
-      line-height: 1.3;
-      color: #ccc;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .news-loading {
-      text-align: center;
-      padding: 2rem;
-      color: #999;
-      font-size: 0.9rem;
-    }
-    /* Scrollbar styling for news container */
-    .news-container::-webkit-scrollbar {
-      width: 6px;
-    }
-    .news-container::-webkit-scrollbar-track {
-      background: #333;
-      border-radius: 3px;
-    }
-    .news-container::-webkit-scrollbar-thumb {
-      background: #555;
-      border-radius: 3px;
-    }
-    .news-container::-webkit-scrollbar-thumb:hover {
-      background: #666;
-    }
+body {
+  margin: 1rem;
+  background: #121212;
+  color: #e0e0e0;
+  font-family: 'Space Mono', monospace;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+section {
+  margin: 1.5rem 0;
+}
+
+/* Titres des sections */
+h3 {
+  margin-top: 1rem;
+  font-family: 'Orbitron', sans-serif;
+  color: #4fc3f7;
+  font-weight: 700;
+}
+
+a {
+  color: #81d4fa;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Iframes grandes et responsives */
+section iframe {
+  width: 100%;
+  height: 1000px; /* augmenté à 1000px */
+  border: none;
+  border-radius: 8px;
+  background: #1a1a1a;
+  overflow: auto;
+}
+
+/* Scrollbars discrètes et modernes */
+section iframe::-webkit-scrollbar {
+  width: 8px;
+}
+section iframe::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+section iframe::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+section iframe::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
   </style>
 </head>
 <body>
   <header>
     <h1 class="nes-text is-primary">Retro Productivity Hub</h1>
-    <p class="nes-text">Gamified Tasks • Pomodoro • XP • Streaks • RSS News</p>
+    <p class="nes-text"> Tasks • Pomodoro • XP • Streaks • RSS News</p>
   </header>
 
-  <!-- Stats -->
-  <section id="stats" class="nes-container is-dark">
-    <h2>Stats</h2>
-    <div>XP: <span id="xp">0</span> | Level: <span id="level">1</span></div>
-    <div class="progress-bar"><div id="xpBar" class="progress" style="width:0%;"></div></div>
-    <div class="flex"><i class="nes-icon is-small heart"></i> Streak: <span id="streak">0</span> jours</div>
-  </section>
+<!-- Embed Daily View -->
+<section id="daily-view-embed" class="nes-container is-dark with-title">
+ <p class="title">📅 <a href="https://tahlasandale.github.io/MaGazette/dalyview.html" target="_blank">Daily View</a></p>
+ <iframe src="https://tahlasandale.github.io/MaGazette/dalyview.html"></iframe>
+</section>
 
-  <!-- Tasks -->
-  <section id="tasks" class="nes-container is-dark with-title">
-    <p class="title">Tâches</p>
-    <div class="flex">
-      <input id="taskInput" type="text" class="nes-input" placeholder="Nouvelle tâche" autocomplete="off" />
-      <button id="addTaskBtn" class="nes-btn is-success">Ajouter</button>
-    </div>
-    <ul id="taskList" class="task-list"></ul>
-  </section>
+<!-- Embed Météo -->
+<section id="meteo-embed" class="nes-container is-dark with-title">
+  <p class="title">⛅ <a href="https://tahlasandale.github.io/MaGazette/meteo.html" target="_blank">Météo</a></p>
+  <iframe src="https://tahlasandale.github.io/MaGazette/meteo.html"></iframe>
+</section>
 
-  <!-- Pomodoro -->
-  <section id="pomodoro" class="nes-container is-dark with-title">
-    <p class="title">Pomodoro</p>
-    <div class="flex" style="align-items:center;gap:8px;flex-wrap:wrap;">
-      <select id="pomodoroSelect" class="nes-select" style="max-width:90px;">
-        <option value="25">25 / 5</option>
-        <option value="50">50 / 10</option>
-        <option value="custom">Personnalisé</option>
-      </select>
-      <input id="customWork" type="number" placeholder="Travail (min)" min="1" style="width:6rem;" class="nes-input" disabled />
-      <input id="customBreak" type="number" placeholder="Pause (min)" min="1" style="width:6rem;" class="nes-input" disabled />
-      <div class="pomodoro-controls">
-        <button id="startPomodoroBtn" class="nes-btn is-primary">Start</button>
-        <button id="stopPomodoroBtn" class="nes-btn is-error">Stop</button>
-        <button id="resetPomodoroBtn" class="nes-btn">Reset</button>
-      </div>
-    </div>
-    <div id="pomodoroDisplay" class="nes-text is-warning" style="font-size:1.8rem; margin-top:1rem; font-weight:bold;">00:00</div>
-  </section>
+<!-- Embed RSS -->
+<section id="rss-embed" class="nes-container is-dark with-title">
+ <p class="title">📡 <a href="https://tahlasandale.github.io/MaGazette/rss.html" target="_blank">RSS</a></p>
+ <iframe src="https://tahlasandale.github.io/MaGazette/rss.html"></iframe>
+</section>
 
-  <!-- Toolbox -->
-  <section id="toolbox" class="nes-container is-dark with-title">
-    <p class="title">Accès Rapide Outils</p>
-    <div id="toolboxContent"></div>
-  </section>
+<!-- Embed Todo App -->
+<section id="todo-embed" class="nes-container is-dark with-title">
+ <p class="title">📝 <a href="https://tahlasandale.github.io/MaGazette/todo%20app.html" target="_blank">Todo App</a></p>
+ <iframe src="https://tahlasandale.github.io/MaGazette/todo%20app.html"></iframe>
+</section>
 
-  <!-- Gazette -->
-  <section id="gazette" class="nes-container is-dark with-title">
-    <p class="title">Daily Gazette</p>
-    <div class="gazette">
-      <div>
-        <h3>Météo</h3>
-        <div id="weather" class="weather-card">Chargement...</div>
-        <div id="logs" class="logs" aria-live="polite" aria-atomic="true"></div>
-      </div>
-      <div>
-        <h3>📰 Actualités Tech</h3>
-        <div class="news-controls">
-          <button id="refreshNewsBtn" class="nes-btn is-primary">🔄</button>
-          <select id="newsFilter">
-            <option value="all">Toutes sources</option>
-            <option value="www.frandroid.com">FrAndroid</option>
-            <option value="korben.info">Korben</option>
-            <option value="raspberrytips.fr">RaspberryTips</option>
-            <option value="www.gamekult.com">Gamekult</option>
-            <option value="www.journaldugeek.com">Journal du Geek</option>
-            <option value="www.actuia.com">Actuia Hardware</option>
-          </select>
-          <input id="newsLimit" type="number" min="1" max="20" value="8" title="Articles/source" />
-          <input id="autoRefresh" type="number" min="0" max="60" value="0" placeholder="Auto(min)" title="Auto-refresh en minutes" />
-        </div>
-        <div id="newsContainer" class="news-container">Chargement des actualités...</div>
-      </div>
-    </div>
-  </section>
+<!-- Embed Pomodoro -->
+<section id="pomodoro-embed" class="nes-container is-dark with-title">
+ <p class="title">🍅 <a href="https://tahlasandale.github.io/MaGazette/pomodoro.html" target="_blank">Pomodoro</a></p>
+ <iframe src="https://tahlasandale.github.io/MaGazette/pomodoro.html"></iframe>
+</section>
+
+<!-- Embed Toolbox -->
+<section id="toolbox-embed" class="nes-container is-dark with-title">
+ <p class="title">🧰 <a href="https://tahlasandale.github.io/MaGazette/toolbox.html" target="_blank">Toolbox</a></p>
+ <iframe src="https://tahlasandale.github.io/MaGazette/toolbox.html"></iframe>
+</section>
+
+<!-- Embed Feedbacks -->
+<section id="feedbacks-embed" class="nes-container is-dark with-title">
+ <p class="title">💬 <a href="https://tahlasandale.github.io/MaGazette/feedbacks.html" target="_blank">Feedbacks</a></p>
+ <iframe src="https://tahlasandale.github.io/MaGazette/feedbacks.html"></iframe>
+</section>
 
   <footer>Retro Productivity Hub © 2025</footer>
 
 <script>
-  // --- Sound system ---
-  const beepSound = new Audio('data:audio/wav;base64,UklGRjQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA='); // silent wav placeholder
-  // Real beep using Web Audio API:
-  function beep(duration=200, freq=440, vol=0.2){
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = freq;
-    osc.type = "square";
-    gain.gain.value = vol;
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    setTimeout(()=>{
-      osc.stop();
-      ctx.close();
-    },duration);
-  }
-
-  // ---- State & XP system ----
-  let state = {tasks:[], xp:0, level:1, streak:0, lastActiveDay:null};
-  const XP_PER_TASK=10, XP_PER_POMODORO=20, LEVEL_UP_XP=100;
-
-  function loadState(){
-    let saved=localStorage.getItem("retroProductivity");
-    if(saved){state={...state,...JSON.parse(saved)};}
-    render();
-  }
-  function saveState(){ localStorage.setItem("retroProductivity",JSON.stringify(state)); }
-  function addXP(amount){ state.xp+=amount;
-    if(state.xp>=LEVEL_UP_XP){state.level++; state.xp-=LEVEL_UP_XP;}
-    updateStats(); saveState(); }
-  function updateStats(){
-    document.getElementById("xp").textContent=state.xp;
-    document.getElementById("level").textContent=state.level;
-    document.getElementById("streak").textContent=state.streak;
-    document.getElementById("xpBar").style.width=(state.xp/LEVEL_UP_XP*100)+"%";
-  }
-  function checkStreak(){
-    let today=new Date().toDateString();
-    if(state.lastActiveDay!==today){
-      let yesterday=new Date(Date.now()-86400000).toDateString();
-      state.streak=(state.lastActiveDay===yesterday)? state.streak+1:1;
-      state.lastActiveDay=today;
-    }
-    saveState(); updateStats();
-  }
-
-  // ---- Tasks ----
-  function renderTasks(){
-    const taskList=document.getElementById("taskList");
-    taskList.innerHTML="";
-    state.tasks.forEach((t,i)=>{
-      let li=document.createElement("li");
-      li.className="task-item nes-container is-dark "+(t.done?"completed":"");
-      li.draggable=true;
-      li.innerHTML=`<input type="checkbox" ${t.done?"checked":""}>
-        <span>${t.text}</span> <button class="nes-btn is-error is-small">X</button>`;
-      li.querySelector("input").onchange=e=>{
-        t.done=e.target.checked; if(t.done){addXP(XP_PER_TASK); checkStreak();}
-        saveState(); renderTasks();
-      };
-      li.querySelector("button").onclick=()=>{state.tasks.splice(i,1);saveState();renderTasks();};
-      li.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i);});
-      li.addEventListener("dragover",e=>e.preventDefault());
-      li.addEventListener("drop",e=>{
-        let from=e.dataTransfer.getData("text/plain");
-        let temp=state.tasks[from];
-        state.tasks.splice(from,1);
-        state.tasks.splice(i,0,temp);
-        saveState();
-        renderTasks();
-      });
-      taskList.appendChild(li);
-    });
-  }
-  document.getElementById("addTaskBtn").onclick=()=>{
-    const val=document.getElementById("taskInput").value;
-    if(val.trim()){
-      state.tasks.push({id:Date.now(),text:val,done:false});
-      document.getElementById("taskInput").value="";
-      saveState();
-      renderTasks();
-    }
-  };
-
-  // ---- Pomodoro with start, stop, reset and beeps ----
-  const startBtn=document.getElementById("startPomodoroBtn");
-  const stopBtn=document.getElementById("stopPomodoroBtn");
-  const resetBtn=document.getElementById("resetPomodoroBtn");
-  const display=document.getElementById("pomodoroDisplay");
-  const pomodoroSelect=document.getElementById("pomodoroSelect");
-  const customWork=document.getElementById("customWork");
-  const customBreak=document.getElementById("customBreak");
-
-  let timerId=null;
-  let totalSeconds=0;
-  let isWorking=true;
-
-  function updateDisplay(seconds){
-    const m=Math.floor(seconds/60).toString().padStart(2,"0");
-    const s=(seconds%60).toString().padStart(2,"0");
-    display.textContent=(isWorking?"Travail: ":"Pause: ") + m + ":" + s;
-  }
-
-  function startTimer(){
-    if(timerId) return;
-    // get times
-    let workM=25, breakM=5;
-    if(pomodoroSelect.value==="25"){workM=25; breakM=5;}
-    else if(pomodoroSelect.value==="50"){workM=50; breakM=10;}
-    else {
-      workM = parseInt(customWork.value) || 25;
-      breakM = parseInt(customBreak.value) || 5;
-    }
-    isWorking=true;
-    totalSeconds=workM*60;
-    updateDisplay(totalSeconds);
-    timerId=setInterval(()=>{
-      totalSeconds--;
-      if(totalSeconds<0){
-        beep(400, 880, 0.3);
-        if(isWorking){
-          addXP(XP_PER_POMODORO);
-          checkStreak();
-          alert("Cycle travail terminé !");
-          totalSeconds = breakM*60;
-          isWorking = false;
-          updateDisplay(totalSeconds);
-        } else {
-          alert("Pause terminée !");
-          stopTimer();
-        }
-      } else {
-        updateDisplay(totalSeconds);
-      }
-    },1000);
-  }
-  function stopTimer(){
-    if(timerId){
-      clearInterval(timerId);
-      timerId=null;
-    }
-  }
-  function resetTimer(){
-    stopTimer();
-    updateDisplay(0);
-  }
-
-  startBtn.onclick=()=>startTimer();
-  stopBtn.onclick=()=>stopTimer();
-  resetBtn.onclick=()=>{
-    stopTimer();
-    updateDisplay(0);
-  };
-
-  pomodoroSelect.onchange=()=>{
-    if(pomodoroSelect.value==="custom"){
-      customWork.disabled=false;
-      customBreak.disabled=false;
-    } else {
-      customWork.disabled=true;
-      customBreak.disabled=true;
-    }
-  };
-
-  // ---- Toolbox ----
-  const toolboxSections = {
-    "📒 Productivité":[
-      {name:"MEGA Folder",url:"https://mega.nz/folder/krk0UCAS#Q6ySLCRELUqu_07202iiwQ"},
-      {name:"SimpleTabHtml",url:"https://traditionpixel.itch.io/simpletabhtml"},
-      {name:"Google Keep",url:"https://keep.google.com/"},
-      {name:"Google Drive",url:"https://drive.google.com/"}],
-    "🎓 Études":[
-      {name:"Polytech Temp Site",url:"https://polytech-paris-saclay.jimdofree.com/"},
-      {name:"eCampus",url:"https://ecampus.paris-saclay.fr/"},
-      {name:"Polytech Oasis",url:"https://polytech-saclay.oasis.aouka.org/"},
-      {name:"Horizon Entreprises",url:"http://horizon-entreprises.polytech.universite-paris-saclay.fr"}],
-    "🚆 Transport":[
-      {name:"Google Maps",url:"https://www.google.com/maps"},
-      {name:"Transilien",url:"https://www.transilien.com/fr"}],
-    "🎬 Détente":[
-      {name:"YouTube",url:"https://www.youtube.com"},
-      {name:"GeForce NOW",url:"https://play.geforcenow.com/mall/#/loginwall"}]
-  };
-  function renderToolbox(){
-    const c=document.getElementById("toolboxContent");
-    c.innerHTML="";
-    for(const sec in toolboxSections){
-      let h=document.createElement("h3");
-      h.textContent=sec;
-      c.appendChild(h);
-      let ul=document.createElement("ul");
-      ul.className="nes-list is-disc";
-      toolboxSections[sec].forEach(l=>{
-        let li=document.createElement("li");
-        li.innerHTML=`<a href="${l.url}" target="_blank" rel="noopener">${l.name}</a>`;
-        ul.appendChild(li);
-      });
-      c.appendChild(ul);
-    }
-  }
-
-  // ---- RSS News System ----
-  const RSS_FEEDS = [
-    "https://www.frandroid.com/feed",
-    "https://korben.info/feed",
-    "https://raspberrytips.fr/feed/",
-    "https://www.gamekult.com/feed",
-    "https://www.journaldugeek.com/feed",
-    "https://www.actuia.com/feed"
-  ];
-
-  let allNewsFeeds = [];
-  let newsAutoTimer = null;
-
-  async function getRSSFeed(url) {
-    const proxy = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url);
-    try {
-      const res = await fetch(proxy);
-      if (!res.ok) throw new Error('Erreur réseau');
-      const data = await res.json();
-      if (!data.items || data.items.length === 0) throw new Error('Aucun article trouvé');
-      return data.items.map(item => ({
-        title: item.title || 'Sans titre',
-        link: item.link || '#',
-        description: (item.content || item.description || '')
-          .replace(/<script[^>]*>.*?<\/script>/g, '')
-          .replace(/<style[^>]*>.*?<\/style>/g, '')
-          .replace(/<img[^>]*>/g,'')
-          .replace(/<[^>]*>/g, '')
-          .replace(/\s+/g,' ')
-          .trim()
-          .substring(0, 200) + (item.description && item.description.length > 200 ? '...' : ''),
-        date: item.pubDate || '',
-        isoDate: item.pubDate ? new Date(item.pubDate).toISOString() : ''
-      }));
-    } catch (error) {
-      return [{
-        title: 'Erreur de chargement du flux',
-        link: '#',
-        description: error.message,
-        date: new Date().toISOString(),
-        isoDate: new Date().toISOString()
-      }];
-    }
-  }
-
-  async function loadNews() {
-    const container = document.getElementById('newsContainer');
-    container.innerHTML = '<div class="news-loading">🔄 Chargement des actualités...</div>';
-
-    allNewsFeeds = [];
-    for (const feedUrl of RSS_FEEDS) {
-      const source = new URL(feedUrl).hostname;
-      const articles = await getRSSFeed(feedUrl);
-      allNewsFeeds.push({ source, articles });
-    }
-
-    renderNews();
-  }
-
-  function renderNews() {
-    const container = document.getElementById('newsContainer');
-    const filter = document.getElementById('newsFilter').value;
-    const limit = Math.max(1, Math.min(20, parseInt(document.getElementById('newsLimit').value || '8', 10)));
-
-    container.innerHTML = '';
-
-    let feedsToRender = [...allNewsFeeds];
-    
-    if (filter === 'all') {
-      // Mélanger tous les articles
-      const allArticles = feedsToRender.flatMap(feed => 
-        feed.articles.slice(0, limit).map(a => ({...a, source: feed.source}))
-      );
-      // Trier par date (plus récent d'abord) puis mélanger un peu
-      allArticles.sort((a, b) => new Date(b.isoDate) - new Date(a.isoDate));
-      const displayArticles = allArticles.slice(0, limit * 2); // Limiter le total
-
-      displayArticles.forEach(article => {
-        const div = document.createElement('div');
-        div.className = 'news-item';
-        const dateTxt = article.date ? new Date(article.date).toLocaleDateString('fr-FR') : '';
-        div.innerHTML = `
-          <h4><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h4>
-          <div class="news-meta">📰 ${article.source} ${dateTxt ? '• ' + dateTxt : ''}</div>
-          <div class="news-description">${article.description}</div>
-        `;
-        container.appendChild(div);
-      });
-    } else {
-      // Afficher une source spécifique
-      feedsToRender.forEach(feed => {
-        if (feed.source !== filter) return;
-        
-        const title = document.createElement('div');
-        title.className = 'source-title';
-        title.textContent = `🔗 ${feed.source}`;
-        container.appendChild(title);
-
-        feed.articles.slice(0, limit).forEach(article => {
-          const div = document.createElement('div');
-          div.className = 'news-item';
-          const dateTxt = article.date ? new Date(article.date).toLocaleDateString('fr-FR') : '';
-          div.innerHTML = `
-            <h4><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h4>
-            <div class="news-meta">${dateTxt}</div>
-            <div class="news-description">${article.description}</div>
-          `;
-          container.appendChild(div);
-        });
-      });
-    }
-
-    if (!container.hasChildNodes()) {
-      const empty = document.createElement('div');
-      empty.className = 'news-loading';
-      empty.textContent = 'Aucun article pour ce filtre.';
-      container.appendChild(empty);
-    }
-  }
-
-  function onAutoRefreshChange() {
-    const mins = parseInt(document.getElementById('autoRefresh').value || '0', 10);
-    if (newsAutoTimer) { 
-      clearInterval(newsAutoTimer); 
-      newsAutoTimer = null; 
-    }
-    if (mins > 0) {
-      newsAutoTimer = setInterval(loadNews, mins * 60 * 1000);
-    }
-  }
-
-  // Event listeners for news
-  document.getElementById('refreshNewsBtn').addEventListener('click', loadNews);
-  document.getElementById('newsFilter').addEventListener('change', renderNews);
-  document.getElementById('newsLimit').addEventListener('change', renderNews);
-  document.getElementById('autoRefresh').addEventListener('change', onAutoRefreshChange);
-
-  // ---- Gazette / Météo Open-Meteo ----
-  const weatherCodes = {
-    0:"Ciel clair",
-    2:"Partiellement nuageux",
-    3:"Couvert",
-    45:"Brouillard",
-    48:"Brume givrée",
-    51:"Bruine légère",
-    53:"Bruine modérée",
-    55:"Bruine dense",
-    56:"Bruine verglaçante légère",
-    57:"Bruine verglaçante dense",
-    61:"Pluie faible",
-    63:"Pluie modérée",
-    65:"Pluie forte",
-    66:"Pluie verglacante faible",
-    67:"Pluie verglaçante forte",
-    71:"Neige faible",
-    73:"Neige modérée",
-    75:"Neige forte",
-    77:"Granules de neige",
-    80:"Averses faibles",
-    81:"Averses modérées",
-    82:"Averses fortes",
-    85:"Averses de neige faibles",
-    86:"Averses de neige fortes",
-    95:"Orages",
-    96:"Orages faibles",
-    99:"Orages forts"
-  };
-  function log(msg){
-    const logs=document.getElementById("logs");
-    logs.innerText+=msg+"\n";
-    logs.scrollTop=logs.scrollHeight;
-  }
-  async function getLocation(){
-    log("📍 Récupération position...");
-    return new Promise(resolve=>{
-      let resolved=false;
-      const timer=setTimeout(()=>{
-        if(!resolved){resolved=true;log("⏳ Timeout, fallback Paris");resolve({lat:48.8566,lon:2.3522});}
-      },5000);
-      if("geolocation" in navigator){
-        navigator.geolocation.getCurrentPosition(
-          pos=>{
-            if(!resolved){resolved=true;clearTimeout(timer);log("✅ Position obtenue");resolve({lat:pos.coords.latitude,lon:pos.coords.longitude});}
-          },
-          () => {
-            if(!resolved){resolved=true;clearTimeout(timer);log("⚠️ Position refusée, fallback Paris");resolve({lat:48.8566,lon:2.3522});}
-          }
-        );
-      } else {
-        resolved=true;
-        log("⚠️ Géolocalisation non disponible, fallback Paris");
-        resolve({lat:48.8566,lon:2.3522});
-      }
-    });
-  }
-  async function getWeather(lat,lon){
-    log("⛅ Chargement météo Open-Meteo...");
-    try{
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=temperature_2m,weathercode&forecast_days=1`);
-      if(!res.ok) throw new Error("Erreur API météo");
-      const data = await res.json();
-      log("✅ Météo reçue");
-      return data;
-    }catch(e){
-      log("❌ Erreur météo : "+e);
-      return null;
-    }
-  }
-  function buildWeather(weather){
-    if(!weather||!weather.current_weather) return '<div class="error">❌ Pas de météo disponible.</div>';
-    const cur = weather.current_weather;
-    let description = weatherCodes[cur.weathercode]||"Inconnu";
-    let html=`
-      <div class="weather-now">
-        <div>${new Date(cur.time).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})}</div>
-        <div>🌡️ ${cur.temperature} °C</div>
-        <div>💨 ${cur.windspeed} km/h</div>
-        <div>⛅ ${description}</div>
-      </div>
-      <h4>Prévisions aujourd'hui :</h4>
-      <div class="forecast-hours">`;
-    for(let i=0;i<weather.hourly.time.length;i+=3){
-      const hour = new Date(weather.hourly.time[i]).toLocaleTimeString('fr-FR',{hour:"2-digit",minute:"2-digit"});
-      html += `<div class="forecast-hour">
-          <strong>${hour}</strong><br/>
-          ${weather.hourly.temperature_2m[i]} °C<br/>
-          ${weatherCodes[weather.hourly.weathercode[i]]||"?"}
-      </div>`;
-    }
-    html += "</div>";
-    return html;
-  }
-  async function loadWeather(){
-    const loc = await getLocation();
-    const w = await getWeather(loc.lat,loc.lon);
-    document.getElementById("weather").innerHTML = buildWeather(w);
-  }
-
-  // ---- Init ----
-  function render(){
-    renderTasks();
-    updateStats();
-    renderToolbox();
-  }
-  loadState();
-  loadWeather();
-  loadNews(); // Charger les actualités au démarrage
-  onAutoRefreshChange(); // Initialiser l'auto-refresh
-
   // ---- Keyboard Shortcuts ----
-  document.addEventListener("keydown",e=>{
-    if(e.ctrlKey&&e.key==="Enter"){document.getElementById("addTaskBtn").click();}
-    if(e.ctrlKey&&e.key===" "){document.getElementById("startPomodoroBtn").click(); e.preventDefault();}
-    if(e.ctrlKey&&e.key==="r"){document.getElementById("refreshNewsBtn").click(); e.preventDefault();}
+  document.addEventListener("keydown", e => {
+    if(e.ctrlKey && e.key==="Enter"){document.getElementById("addTaskBtn")?.click();}
+    if(e.ctrlKey && e.key===" "){document.getElementById("startPomodoroBtn")?.click(); e.preventDefault();}
+    if(e.ctrlKey && e.key==="r"){document.getElementById("refreshNewsBtn")?.click(); e.preventDefault();}
   });
 </script>
 </body>
