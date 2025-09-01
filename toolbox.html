@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbox - Neobrutalist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(45deg, #ff0080, #00ff80, #0080ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 0, 128, 0.5);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .category {
+            background: #111111;
+            border: 4px solid #ffffff;
+            border-radius: 0;
+            padding: 25px;
+            position: relative;
+            transform: rotate(-1deg);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 8px 8px 0px #333333;
+        }
+
+        .category:nth-child(even) {
+            transform: rotate(1deg);
+        }
+
+        .category:hover {
+            transform: rotate(0deg) scale(1.05);
+            border-color: #ff0080;
+            box-shadow: 12px 12px 0px #ff0080;
+            background: #1a1a1a;
+        }
+
+        .category h2 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: 2px;
+            border-bottom: 3px solid #ff0080;
+            padding-bottom: 10px;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .link {
+            background: #000000;
+            border: 3px solid #ffffff;
+            padding: 15px 20px;
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .link:hover:before {
+            left: 100%;
+        }
+
+        .link:hover {
+            background: #ff0080;
+            border-color: #00ff80;
+            color: #000000;
+            transform: translateX(5px);
+            box-shadow: 5px 5px 0px #00ff80;
+        }
+
+        .category:nth-child(1) .link:hover { background: #ff0080; }
+        .category:nth-child(2) .link:hover { background: #00ff80; }
+        .category:nth-child(3) .link:hover { background: #0080ff; }
+        .category:nth-child(4) .link:hover { background: #ffff00; }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .category {
+                padding: 20px;
+                transform: rotate(0deg);
+            }
+            
+            .category:nth-child(even) {
+                transform: rotate(0deg);
+            }
+        }
+
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch1 0.5s infinite linear alternate-reverse;
+        }
+
+        .glitch::after {
+            animation: glitch2 0.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch1 {
+            0% {
+                clip: rect(42px, 9999px, 44px, 0);
+                transform: skew(0.5deg);
+            }
+            5% {
+                clip: rect(12px, 9999px, 59px, 0);
+                transform: skew(0.4deg);
+            }
+            10% {
+                clip: rect(48px, 9999px, 29px, 0);
+                transform: skew(0.1deg);
+            }
+            15% {
+                clip: rect(42px, 9999px, 73px, 0);
+                transform: skew(0.1deg);
+            }
+            20% {
+                clip: rect(63px, 9999px, 27px, 0);
+                transform: skew(0.7deg);
+            }
+            25% {
+                clip: rect(34px, 9999px, 55px, 0);
+                transform: skew(0.2deg);
+            }
+            30% {
+                clip: rect(86px, 9999px, 73px, 0);
+                transform: skew(0.8deg);
+            }
+            35% {
+                clip: rect(20px, 9999px, 20px, 0);
+                transform: skew(1deg);
+            }
+            40% {
+                clip: rect(26px, 9999px, 60px, 0);
+                transform: skew(0.6deg);
+            }
+            45% {
+                clip: rect(25px, 9999px, 42px, 0);
+                transform: skew(0.2deg);
+            }
+            50% {
+                clip: rect(58px, 9999px, 84px, 0);
+                transform: skew(0.3deg);
+            }
+            55% {
+                clip: rect(13px, 9999px, 31px, 0);
+                transform: skew(0.7deg);
+            }
+            60% {
+                clip: rect(67px, 9999px, 61px, 0);
+                transform: skew(0.4deg);
+            }
+            65% {
+                clip: rect(10px, 9999px, 105px, 0);
+                transform: skew(0.9deg);
+            }
+            70% {
+                clip: rect(78px, 9999px, 115px, 0);
+                transform: skew(0.2deg);
+            }
+            75% {
+                clip: rect(105px, 9999px, 13px, 0);
+                transform: skew(0.4deg);
+            }
+            80% {
+                clip: rect(15px, 9999px, 90px, 0);
+                transform: skew(0.5deg);
+            }
+            85% {
+                clip: rect(78px, 9999px, 44px, 0);
+                transform: skew(0.3deg);
+            }
+            90% {
+                clip: rect(65px, 9999px, 39px, 0);
+                transform: skew(0.2deg);
+            }
+            95% {
+                clip: rect(90px, 9999px, 83px, 0);
+                transform: skew(0.3deg);
+            }
+            100% {
+                clip: rect(63px, 9999px, 80px, 0);
+                transform: skew(0.5deg);
+            }
+        }
+
+        @keyframes glitch2 {
+            0% {
+                clip: rect(65px, 9999px, 100px, 0);
+                transform: skew(0.8deg);
+            }
+            5% {
+                clip: rect(52px, 9999px, 74px, 0);
+                transform: skew(0.7deg);
+            }
+            10% {
+                clip: rect(79px, 9999px, 85px, 0);
+                transform: skew(0.6deg);
+            }
+            15% {
+                clip: rect(67px, 9999px, 61px, 0);
+                transform: skew(0.3deg);
+            }
+            20% {
+                clip: rect(24px, 9999px, 105px, 0);
+                transform: skew(0.2deg);
+            }
+            25% {
+                clip: rect(87px, 9999px, 24px, 0);
+                transform: skew(0.4deg);
+            }
+            30% {
+                clip: rect(38px, 9999px, 31px, 0);
+                transform: skew(0.5deg);
+            }
+            35% {
+                clip: rect(86px, 9999px, 51px, 0);
+                transform: skew(0.1deg);
+            }
+            40% {
+                clip: rect(17px, 9999px, 80px, 0);
+                transform: skew(0.3deg);
+            }
+            45% {
+                clip: rect(33px, 9999px, 40px, 0);
+                transform: skew(0.8deg);
+            }
+            50% {
+                clip: rect(29px, 9999px, 70px, 0);
+                transform: skew(0.9deg);
+            }
+            55% {
+                clip: rect(44px, 9999px, 57px, 0);
+                transform: skew(0.3deg);
+            }
+            60% {
+                clip: rect(59px, 9999px, 33px, 0);
+                transform: skew(0.4deg);
+            }
+            65% {
+                clip: rect(74px, 9999px, 49px, 0);
+                transform: skew(0.6deg);
+            }
+            70% {
+                clip: rect(25px, 9999px, 95px, 0);
+                transform: skew(0.2deg);
+            }
+            75% {
+                clip: rect(60px, 9999px, 70px, 0);
+                transform: skew(0.8deg);
+            }
+            80% {
+                clip: rect(36px, 9999px, 42px, 0);
+                transform: skew(0.5deg);
+            }
+            85% {
+                clip: rect(88px, 9999px, 98px, 0);
+                transform: skew(0.9deg);
+            }
+            90% {
+                clip: rect(69px, 9999px, 52px, 0);
+                transform: skew(0.7deg);
+            }
+            95% {
+                clip: rect(41px, 9999px, 63px, 0);
+                transform: skew(0.4deg);
+            }
+            100% {
+                clip: rect(82px, 9999px, 99px, 0);
+                transform: skew(0.1deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="glitch" data-text="TOOLBOX">TOOLBOX</h1>
+        
+        <div class="grid" id="toolboxGrid">
+            <!-- Le contenu sera généré par JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const toolboxSections = {
+            "📒 Productivité": [
+                {name: "MEGA Folder", url: "https://mega.nz/folder/krk0UCAS#Q6ySLCRELUqu_07202iiwQ"},
+                {name: "SimpleTabHtml", url: "https://traditionpixel.itch.io/simpletabhtml"},
+                {name: "Google Keep", url: "https://keep.google.com/"},
+                {name: "Google Drive", url: "https://drive.google.com/"}
+            ],
+            "🎓 Études": [
+                {name: "Polytech Temp Site", url: "https://polytech-paris-saclay.jimdofree.com/"},
+                {name: "eCampus", url: "https://ecampus.paris-saclay.fr/"},
+                {name: "Polytech Oasis", url: "https://polytech-saclay.oasis.aouka.org/"},
+                {name: "Horizon Entreprises", url: "http://horizon-entreprises.polytech.universite-paris-saclay.fr"}
+            ],
+            "🚆 Transport": [
+                {name: "Google Maps", url: "https://www.google.com/maps"},
+                {name: "Transilien", url: "https://www.transilien.com/fr"}
+            ],
+            "🎬 Détente": [
+                {name: "YouTube", url: "https://www.youtube.com"},
+                {name: "GeForce NOW", url: "https://play.geforcenow.com/mall/#/loginwall"}
+            ]
+        };
+
+        function renderToolbox() {
+            const grid = document.getElementById('toolboxGrid');
+            grid.innerHTML = '';
+
+            for (const sectionName in toolboxSections) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+
+                const title = document.createElement('h2');
+                title.textContent = sectionName;
+                categoryDiv.appendChild(title);
+
+                const linksDiv = document.createElement('div');
+                linksDiv.className = 'links';
+
+                toolboxSections[sectionName].forEach(link => {
+                    const linkElement = document.createElement('a');
+                    linkElement.className = 'link';
+                    linkElement.href = link.url;
+                    linkElement.target = '_blank';
+                    linkElement.rel = 'noopener';
+                    linkElement.textContent = link.name;
+                    linksDiv.appendChild(linkElement);
+                });
+
+                categoryDiv.appendChild(linksDiv);
+                grid.appendChild(categoryDiv);
+            }
+        }
+
+        // Générer le contenu au chargement de la page
+        document.addEventListener('DOMContentLoaded', renderToolbox);
+    </script>
+</body>
+</html>
