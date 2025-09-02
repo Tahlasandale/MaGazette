@@ -6,28 +6,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://unpkg.com/nes.css/css/nes.min.css" rel="stylesheet" />
   <style>
+/* ---- Base ---- */
 body {
-  margin: 1rem;
+  margin: 0;
+  padding: 0;
   background: #121212;
   color: #e0e0e0;
   font-family: 'Space Mono', monospace;
+  line-height: 1.4;
 }
 
 header {
   text-align: center;
-  margin-bottom: 1rem;
+  padding: 0.8rem 0.5rem;
 }
 
+h1 {
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  margin-bottom: 0.3rem;
+}
+
+header p {
+  font-size: clamp(0.85rem, 2.2vw, 1rem);
+  color: #bdbdbd;
+}
+
+/* ---- Layout ---- */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  max-width: 100%;
+  margin: auto;
+}
+
+/* ---- Sections compactes ---- */
 section {
-  margin: 1.5rem 0;
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+  background: #1c1c1c;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
-/* Titres des sections */
-h3 {
-  margin-top: 1rem;
+section .title {
   font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
   color: #4fc3f7;
-  font-weight: 700;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 a {
@@ -38,30 +68,21 @@ a:hover {
   text-decoration: underline;
 }
 
-footer {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 0.8rem;
-  color: #666;
-}
-
-/* Iframes grandes et responsives */
+/* ---- Iframes ---- */
 section iframe {
   width: 100%;
-  height: 1000px; /* augmenté à 1000px */
+  min-height: 600px;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   background: #1a1a1a;
-  overflow: auto;
 }
 
-/* Scrollbars discrètes et modernes */
+/* ---- Scrollbars custom ---- */
 section iframe::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 section iframe::-webkit-scrollbar-track {
   background: #222;
-  border-radius: 4px;
 }
 section iframe::-webkit-scrollbar-thumb {
   background: #555;
@@ -70,65 +91,94 @@ section iframe::-webkit-scrollbar-thumb {
 section iframe::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
+
+/* ---- Footer ---- */
+footer {
+  text-align: center;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.75rem;
+  color: #888;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  section iframe {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  header p {
+    font-size: 0.8rem;
+  }
+  section iframe {
+    min-height: 450px;
+  }
+}
+
+/* ---- PC only ---- */
+@media (min-width: 1024px) {
+  section iframe {
+    min-height: 1000px;
+  }
+}
   </style>
 </head>
 <body>
   <header>
     <h1 class="nes-text is-primary">Retro Productivity Hub</h1>
-    <p class="nes-text"> Tasks • Pomodoro • XP • Streaks • RSS News</p>
+    <p class="nes-text">Tasks • Pomodoro • XP • Streaks • RSS News</p>
   </header>
 
-<!-- Embed Daily View -->
-<section id="daily-view-embed" class="nes-container is-dark with-title">
- <p class="title">📅 <a href="https://tahlasandale.github.io/MaGazette/dalyview.html" target="_blank">Daily View</a></p>
- <iframe src="https://tahlasandale.github.io/MaGazette/dalyview.html"></iframe>
-</section>
+  <main>
+    <section>
+      <p class="title">📅 <a href="https://tahlasandale.github.io/MaGazette/dalyview.html" target="_blank">Daily View</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/dalyview.html"></iframe>
+    </section>
 
-<!-- Embed Météo -->
-<section id="meteo-embed" class="nes-container is-dark with-title">
-  <p class="title">⛅ <a href="https://tahlasandale.github.io/MaGazette/meteo.html" target="_blank">Météo</a></p>
-  <iframe src="https://tahlasandale.github.io/MaGazette/meteo.html"></iframe>
-</section>
+    <section>
+      <p class="title">⛅ <a href="https://tahlasandale.github.io/MaGazette/meteo.html" target="_blank">Météo</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/meteo.html"></iframe>
+    </section>
 
-<!-- Embed RSS -->
-<section id="rss-embed" class="nes-container is-dark with-title">
- <p class="title">📡 <a href="https://tahlasandale.github.io/MaGazette/rss.html" target="_blank">RSS</a></p>
- <iframe src="https://tahlasandale.github.io/MaGazette/rss.html"></iframe>
-</section>
+    <section>
+      <p class="title">📡 <a href="https://tahlasandale.github.io/MaGazette/rss.html" target="_blank">RSS</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/rss.html"></iframe>
+    </section>
 
-<!-- Embed Todo App -->
-<section id="todo-embed" class="nes-container is-dark with-title">
- <p class="title">📝 <a href="https://tahlasandale.github.io/MaGazette/todo%20app.html" target="_blank">Todo App</a></p>
- <iframe src="https://tahlasandale.github.io/MaGazette/todo%20app.html"></iframe>
-</section>
+    <section>
+      <p class="title">📝 <a href="https://tahlasandale.github.io/MaGazette/todo%20app.html" target="_blank">Todo App</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/todo%20app.html"></iframe>
+    </section>
 
-<!-- Embed Pomodoro -->
-<section id="pomodoro-embed" class="nes-container is-dark with-title">
- <p class="title">🍅 <a href="https://tahlasandale.github.io/MaGazette/pomodoro.html" target="_blank">Pomodoro</a></p>
- <iframe src="https://tahlasandale.github.io/MaGazette/pomodoro.html"></iframe>
-</section>
+    <section>
+      <p class="title">🍅 <a href="https://tahlasandale.github.io/MaGazette/pomodoro.html" target="_blank">Pomodoro</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/pomodoro.html"></iframe>
+    </section>
 
-<!-- Embed Toolbox -->
-<section id="toolbox-embed" class="nes-container is-dark with-title">
- <p class="title">🧰 <a href="https://tahlasandale.github.io/MaGazette/toolbox.html" target="_blank">Toolbox</a></p>
- <iframe src="https://tahlasandale.github.io/MaGazette/toolbox.html"></iframe>
-</section>
+    <section>
+      <p class="title">🧰 <a href="https://tahlasandale.github.io/MaGazette/toolbox.html" target="_blank">Toolbox</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/toolbox.html"></iframe>
+    </section>
 
-<!-- Embed Feedbacks -->
-<section id="feedbacks-embed" class="nes-container is-dark with-title">
- <p class="title">💬 <a href="https://tahlasandale.github.io/MaGazette/feedbacks.html" target="_blank">Feedbacks</a></p>
- <iframe src="https://tahlasandale.github.io/MaGazette/feedbacks.html"></iframe>
-</section>
+    <section>
+      <p class="title">💬 <a href="https://tahlasandale.github.io/MaGazette/feedbacks.html" target="_blank">Feedbacks</a></p>
+      <iframe src="https://tahlasandale.github.io/MaGazette/feedbacks.html"></iframe>
+    </section>
+  </main>
 
   <footer>Retro Productivity Hub © 2025</footer>
 
-<script>
-  // ---- Keyboard Shortcuts ----
-  document.addEventListener("keydown", e => {
-    if(e.ctrlKey && e.key==="Enter"){document.getElementById("addTaskBtn")?.click();}
-    if(e.ctrlKey && e.key===" "){document.getElementById("startPomodoroBtn")?.click(); e.preventDefault();}
-    if(e.ctrlKey && e.key==="r"){document.getElementById("refreshNewsBtn")?.click(); e.preventDefault();}
-  });
-</script>
+  <script>
+    // ---- Raccourcis clavier ----
+    document.addEventListener("keydown", e => {
+      if(e.ctrlKey && e.key==="Enter"){document.getElementById("addTaskBtn")?.click();}
+      if(e.ctrlKey && e.key===" "){document.getElementById("startPomodoroBtn")?.click(); e.preventDefault();}
+      if(e.ctrlKey && e.key==="r"){document.getElementById("refreshNewsBtn")?.click(); e.preventDefault();}
+    });
+  </script>
 </body>
 </html>
