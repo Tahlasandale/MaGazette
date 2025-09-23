@@ -1,195 +1,362 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Retro Productivity Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="favicon.png" type="image/png">
-  <link href="https://unpkg.com/nes.css/css/nes.min.css" rel="stylesheet" />
-  <style>
-/* ---- Base ---- */
-body {
-  margin: 0;
-  padding: 0;
-  background: #121212;
-  color: #e0e0e0;
-  font-family: 'Space Mono', monospace;
-  line-height: 1.4;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Productivity Hub</title>
+    <link rel="stylesheet" href="https://unpkg.com/xp.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
+            font-family: 'MS Sans Serif', sans-serif;
+            min-height: 100vh;
+        }
 
-header {
-  text-align: center;
-  padding: 0.8rem 0.5rem;
-}
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-h1 {
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  margin-bottom: 0.3rem;
-}
+        .header h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
 
-header p {
-  font-size: clamp(0.85rem, 2.2vw, 1rem);
-  color: #bdbdbd;
-}
+        .navbar {
+            background: #c0c0c0;
+            border: 2px outset #c0c0c0;
+            padding: 8px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
 
-/* ---- Layout ---- */
-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 0.5rem;
-  max-width: 100%;
-  margin: auto;
-}
+        .navbar a {
+            text-decoration: none;
+            color: black;
+            padding: 4px 8px;
+            border: 1px outset #c0c0c0;
+            background: #c0c0c0;
+            font-size: 11px;
+            transition: all 0.1s;
+        }
 
-/* ---- Sections compactes ---- */
-section {
-  border-radius: 6px;
-  padding: 0.3rem 0.4rem;
-  background: #1c1c1c;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
+        .navbar a:hover {
+            border: 1px inset #c0c0c0;
+            background: #a0a0a0;
+        }
 
-section .title {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #4fc3f7;
-  margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
+        .navbar a:active {
+            border: 1px inset #c0c0c0;
+            background: #808080;
+        }
 
-a {
-  color: #81d4fa;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
+        .apps-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-/* ---- Iframes ---- */
-section iframe {
-  width: 100%;
-  min-height: 600px;
-  border: none;
-  border-radius: 4px;
-  background: #1a1a1a;
-}
+        .app-card {
+            background: #c0c0c0;
+            border: 2px outset #c0c0c0;
+            padding: 15px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
 
-/* ---- Scrollbars custom ---- */
-section iframe::-webkit-scrollbar {
-  width: 6px;
-}
-section iframe::-webkit-scrollbar-track {
-  background: #222;
-}
-section iframe::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 4px;
-}
-section iframe::-webkit-scrollbar-thumb:hover {
-  background: #777;
-}
+        .app-card:hover {
+            border: 2px inset #c0c0c0;
+            transform: translateY(1px);
+        }
 
-/* ---- Footer ---- */
-footer {
-  text-align: center;
-  margin: 1rem 0 0.5rem;
-  font-size: 0.75rem;
-  color: #888;
-}
+        .app-card:active {
+            border: 2px inset #c0c0c0;
+            transform: translateY(2px);
+        }
 
-/* ---- Responsive ---- */
-@media (max-width: 768px) {
-  section iframe {
-    min-height: 500px;
-  }
-}
+        .app-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 10px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-  header p {
-    font-size: 0.8rem;
-  }
-  section iframe {
-    min-height: 450px;
-  }
-}
+        .app-title {
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #000080;
+        }
 
-/* ---- PC only ---- */
-@media (min-width: 1024px) {
-  section iframe {
-    min-height: 1000px;
-  }
-}
-  </style>
+        .app-description {
+            font-size: 11px;
+            text-align: center;
+            color: #000;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .app-button {
+            width: 100%;
+            padding: 6px;
+            font-size: 11px;
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            cursor: pointer;
+        }
+
+        .app-button:hover {
+            background: #a0a0a0;
+        }
+
+        .app-button:active {
+            border: 1px inset #c0c0c0;
+            background: #808080;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 12px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .apps-gallery {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .apps-gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Animation d'ouverture */
+        .app-card {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1 class="nes-text is-primary">Retro Productivity Hub</h1>
-    <p class="nes-text">
-  <a href="https://tahlasandale.github.io/MaGazette/dalyview.html" target="_blank">Daily View</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/meteo.html" target="_blank">Météo</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/rss.html" target="_blank">RSS</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/todo%20app.html" target="_blank">Todo</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/pomodoro.html" target="_blank">Pomodoro</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/toolbox.html" target="_blank">Toolbox</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/feedbacks.html" target="_blank">Feedbacks</a> • 
-  <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">SimpleTabHtml</a>
-</p>
+    <div class="header">
+        <h1>🖥️ Retro Productivity Hub</h1>
+    </div>
 
-  </header>
+    <nav class="navbar">
+        <a href="#daily">Daily View</a>
+        <a href="#meteo">Météo</a>
+        <a href="#rss">RSS</a>
+        <a href="#todo">Todo</a>
+        <a href="#pomodoro">Pomodoro</a>
+        <a href="#toolbox">Toolbox</a>
+        <a href="#feedbacks">Feedbacks</a>
+        <a href="#simpletab">SimpleTab</a>
+    </nav>
 
-  <main>
-    <section>
-      <p class="title">📅 <a href="https://tahlasandale.github.io/MaGazette/dalyview.html" target="_blank">Daily View</a></p>
-      <iframe src="https://tahlasandale.github.io/MaGazette/dalyview.html"></iframe>
-    </section>
+    <main class="apps-gallery">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')" id="daily">
+            <div class="app-icon">📅</div>
+            <div class="app-title">Daily View</div>
+            <div class="app-description">
+                Consultez votre agenda quotidien et planifiez votre journée avec style rétro.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">
+                Lancer l'application
+            </button>
+        </div>
 
-    <section>
-      <p class="title">⛅ <a href="https://tahlasandale.github.io/MaGazette/meteo.html" target="_blank">Météo</a></p>
-      <iframe src="https://tahlasandale.github.io/MaGazette/meteo.html"></iframe>
-    </section>
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')" id="meteo">
+            <div class="app-icon">⛅</div>
+            <div class="app-title">Station Météo</div>
+            <div class="app-description">
+                Prévisions météo locales avec interface vintage pour ne jamais être pris au dépourvu.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">
+                Consulter la météo
+            </button>
+        </div>
 
-    <section>
-      <p class="title">📡 <a href="https://tahlasandale.github.io/MaGazette/rss.html" target="_blank">RSS</a></p>
-      <iframe src="https://tahlasandale.github.io/MaGazette/rss.html"></iframe>
-    </section>
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')" id="rss">
+            <div class="app-icon">📡</div>
+            <div class="app-title">Lecteur RSS</div>
+            <div class="app-description">
+                Suivez vos flux d'actualités favoris dans une interface nostalgique des années 2000.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/rss.html')">
+                Lire les flux
+            </button>
+        </div>
 
-    <section>
-      <p class="title">📝 <a href="https://tahlasandale.github.io/MaGazette/todo%20app.html" target="_blank">Todo App</a></p>
-      <iframe src="https://tahlasandale.github.io/MaGazette/todo%20app.html"></iframe>
-    </section>
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')" id="todo">
+            <div class="app-icon">📝</div>
+            <div class="app-title">Gestionnaire de Tâches</div>
+            <div class="app-description">
+                Organisez vos tâches quotidiennes avec un design inspiré des applications vintage.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">
+                Gérer les tâches
+            </button>
+        </div>
 
-    <section>
-      <p class="title">🍅 <a href="https://pomofocus.io/" target="_blank">Pomodoro</a></p>
-      <iframe src="https://pomofocus.io/"></iframe>
-    </section>
+        <div class="app-card" onclick="openApp('https://pomofocus.io/')" id="pomodoro">
+            <div class="app-icon">🍅</div>
+            <div class="app-title">Timer Pomodoro</div>
+            <div class="app-description">
+                Technique Pomodoro pour améliorer votre productivité avec des sessions de travail focalisées.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://pomofocus.io/')">
+                Démarrer une session
+            </button>
+        </div>
 
-    <section>
-      <p class="title">🧰 <a href="https://tahlasandale.github.io/MaGazette/toolbox.html" target="_blank">Toolbox</a></p>
-      <iframe src="https://tahlasandale.github.io/MaGazette/toolbox.html"></iframe>
-    </section>
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')" id="toolbox">
+            <div class="app-icon">🧰</div>
+            <div class="app-title">Boîte à Outils</div>
+            <div class="app-description">
+                Collection d'utilitaires pratiques pour le développement et la productivité au quotidien.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">
+                Ouvrir la toolbox
+            </button>
+        </div>
 
-    <section>
-      <p class="title">💬 <a href="https://tahlasandale.github.io/MaGazette/feedbacks.html" target="_blank">Feedbacks</a></p>
-      <iframe src="https://tahlasandale.github.io/MaGazette/feedbacks.html"></iframe>
-    </section>
-  </main>
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')" id="feedbacks">
+            <div class="app-icon">💬</div>
+            <div class="app-title">Centre de Feedback</div>
+            <div class="app-description">
+                Partagez vos retours et suggestions pour améliorer cette suite d'applications rétro.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">
+                Donner un feedback
+            </button>
+        </div>
 
-  <footer>Retro Productivity Hub © 2025</footer>
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')" id="simpletab">
+            <div class="app-icon">🌐</div>
+            <div class="app-title">SimpleTab HTML</div>
+            <div class="app-description">
+                Page d'accueil minimaliste avec vos raccourcis web essentiels dans l'esprit vintage.
+            </div>
+            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">
+                Ouvrir SimpleTab
+            </button>
+        </div>
+    </main>
 
-  <script>
-    // ---- Raccourcis clavier ----
-    document.addEventListener("keydown", e => {
-      if(e.ctrlKey && e.key==="Enter"){document.getElementById("addTaskBtn")?.click();}
-      if(e.ctrlKey && e.key===" "){document.getElementById("startPomodoroBtn")?.click(); e.preventDefault();}
-      if(e.ctrlKey && e.key==="r"){document.getElementById("refreshNewsBtn")?.click(); e.preventDefault();}
-    });
-  </script>
+    <footer class="footer">
+        <p>🖥️ Retro Productivity Hub © 2025 - Nostalgie des années 2000 ✨</p>
+    </footer>
+
+    <script>
+        function openApp(url) {
+            // Animation de clic
+            const clickedCard = event.currentTarget || event.target.closest('.app-card');
+            if (clickedCard) {
+                clickedCard.style.transform = 'translateY(3px)';
+                setTimeout(() => {
+                    clickedCard.style.transform = 'translateY(0)';
+                }, 150);
+            }
+            
+            // Ouvrir dans un nouvel onglet
+            window.open(url, '_blank');
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/dalyview.html');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/meteo.html');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/rss.html');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        openApp('https://pomofocus.io/');
+                        break;
+                }
+            }
+        });
+
+        // Animation d'apparition séquentielle des cartes
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.app-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Smooth scroll pour les liens de navigation
+        document.querySelectorAll('.navbar a[href^="#"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
