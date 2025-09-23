@@ -66,7 +66,7 @@
 <body>
   <div class="container">
     <h1>📰 Actus Tech <span class="cursor"></span></h1>
-    <p class="sub">FrAndroid • Korben • RaspberryTips • Gamekult • Le Journal du Geek • Actuia Hardware and Co — RSS, regroupés par source. Rafraîchir et filtrer sans recharger la page.</p>
+    <p class="sub">FrAndroid • Korben • RaspberryTips • Gamekult • Le Journal du Geek • Actuia Hardware and Co • Développez.com — RSS, regroupés par source. Rafraîchir et filtrer sans recharger la page.</p>
 
     <div class="controls">
       <button id="refreshBtn" title="Recharger les flux">🔄 Rafraîchir</button>
@@ -79,6 +79,7 @@
         <option value="www.gamekult.com">Gamekult</option>
         <option value="www.journaldugeek.com">Le Journal du Geek</option>
         <option value="www.actuia.com">Actuia Hardware and Co</option>
+        <option value="web.developpez.com">Développez.com</option>
       </select>
       <label for="limit">Articles/source :</label>
       <input id="limit" type="number" min="1" max="50" value="25" />
@@ -98,9 +99,10 @@
       "https://www.frandroid.com/feed",
       "https://korben.info/feed",
       "https://raspberrytips.fr/feed/",
-      "https://www.gamekult.com/feed",
+      "https://www.gamekult.com/feeds/actu.html",
       "https://www.journaldugeek.com/feed",
-      "https://www.actuia.com/feed"
+      "https://www.actuia.com/feed",
+      "https://web.developpez.com/index/rss"
     ];
 
     let allFeeds = [];
