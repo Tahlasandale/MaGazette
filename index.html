@@ -3,310 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retro Productivity Hub</title>
-    <link rel="stylesheet" href="https://unpkg.com/xp.css">
+    <title>CYBER PRODUCTIVITY HUB</title>
     <link rel="icon" href="favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #0099ff 0%, #0066cc 100%);
-            font-family: 'MS Sans Serif', sans-serif;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #0a0a0a;
+            color: #00ff41;
             min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #ff006620 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, #00ff4120 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            overflow-x: hidden;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #00ff4130 0%, transparent 70%);
+            z-index: -1;
+            animation: pulse 3s ease-in-out infinite;
         }
 
         .header h1 {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            font-size: 2.5rem;
+            font-size: 2.8rem;
+            font-weight: 900;
             margin-bottom: 10px;
+            color: #00ff41;
+            text-shadow: 
+                0 0 10px #00ff41,
+                0 0 20px #00ff4180,
+                0 0 40px #00ff4160;
+            text-transform: uppercase;
+            letter-spacing: 3px;
         }
 
         .navbar {
-            background: #c0c0c0;
-            border: 2px outset #c0c0c0;
-            padding: 8px 15px;
-            margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
             justify-content: center;
-            align-items: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 1px solid #00ff41;
+            clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
         }
 
         .navbar a {
+            color: #ffff00;
             text-decoration: none;
-            color: black;
-            padding: 4px 8px;
-            border: 1px outset #c0c0c0;
-            background: #c0c0c0;
-            font-size: 11px;
-            transition: all 0.1s;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border: 1px solid #ffff00;
+            clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .navbar a:hover {
-            border: 1px inset #c0c0c0;
-            background: #a0a0a0;
-        }
-
-        .navbar a:active {
-            border: 1px inset #c0c0c0;
-            background: #808080;
+            background: linear-gradient(135deg, #ffff0020, #ffff0010);
+            box-shadow: 
+                0 0 15px #ffff00,
+                inset 0 0 15px #ffff0020;
+            transform: translateY(-2px);
         }
 
         .apps-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .app-card {
-            background: #c0c0c0;
-            border: 2px outset #c0c0c0;
-            padding: 15px;
-            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #00ff41;
+            clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+            padding: 30px 20px;
+            text-align: center;
             cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #00ff4120, transparent);
+            transition: left 0.5s;
+        }
+
+        .app-card:hover::before {
+            left: 100%;
         }
 
         .app-card:hover {
-            border: 2px inset #c0c0c0;
-            transform: translateY(1px);
+            border-color: #ffff00;
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 10px 30px rgba(0, 255, 65, 0.3),
+                0 0 50px rgba(255, 255, 0, 0.1);
         }
 
         .app-card:active {
-            border: 2px inset #c0c0c0;
-            transform: translateY(2px);
+            transform: translateY(-2px) scale(1.01);
         }
 
         .app-icon {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 10px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 10px #00ff41);
         }
 
         .app-title {
-            font-weight: bold;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 8px;
-            color: #000080;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00ff41;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ff4180;
         }
 
-        .app-description {
-            font-size: 11px;
-            text-align: center;
-            color: #000;
-            margin-bottom: 12px;
-            line-height: 1.3;
-        }
-
-        .app-button {
-            width: 100%;
-            padding: 6px;
-            font-size: 11px;
-            background: #c0c0c0;
-            border: 1px outset #c0c0c0;
-            cursor: pointer;
-        }
-
-        .app-button:hover {
-            background: #a0a0a0;
-        }
-
-        .app-button:active {
-            border: 1px inset #c0c0c0;
-            background: #808080;
+        .app-card:hover .app-title {
+            color: #ffff00;
+            text-shadow: 0 0 15px #ffff0080;
         }
 
         .footer {
             text-align: center;
-            margin-top: 40px;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            font-size: 12px;
+            margin-top: 80px;
+            color: #ff0066;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #ff006680;
         }
 
         /* Responsive design */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
+        @media (min-width: 768px) {
             .apps-gallery {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 15px;
+                grid-template-columns: repeat(3, 1fr);
             }
-            
-            .navbar {
-                flex-direction: column;
-                gap: 10px;
+        }
+
+        @media (min-width: 1024px) {
+            .apps-gallery {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
         @media (max-width: 480px) {
-            .apps-gallery {
-                grid-template-columns: 1fr;
+            body {
+                padding: 15px;
             }
             
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 2.2rem;
+                letter-spacing: 2px;
+            }
+            
+            .navbar {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .navbar a {
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+            
+            .app-card {
+                padding: 25px 15px;
+            }
+            
+            .app-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+            
+            .app-title {
+                font-size: 1rem;
+                letter-spacing: 1px;
             }
         }
 
-        /* Animation d'ouverture */
-        .app-card {
-            animation: slideIn 0.3s ease-out;
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
         }
 
-        @keyframes slideIn {
+        .app-card {
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(50px) scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
+        }
+
+        /* Glitch effect sur le titre */
+        .header h1:hover {
+            animation: glitch 0.3s;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Scanlines effect */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 65, 0.03) 2px,
+                rgba(0, 255, 65, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🖥️ Retro Productivity Hub</h1>
+        <h1>CYBER HUB</h1>
     </div>
 
     <nav class="navbar">
-        <a href="#daily">Daily View</a>
-        <a href="#meteo">Météo</a>
-        <a href="#rss">RSS</a>
-        <a href="#todo">Todo</a>
-        <a href="#pomodoro">Pomodoro</a>
-        <a href="#toolbox">Toolbox</a>
-        <a href="#feedbacks">Feedbacks</a>
-        <a href="#simpletab">SimpleTab</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">DAILY</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">MÉTÉO</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">RSS</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">TODO</a>
+        <a href="#" onclick="openApp('https://pomofocus.io/')">POMODORO</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">TOOLBOX</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">FEEDBACK</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">SIMPLETAB</a>
     </nav>
 
     <main class="apps-gallery">
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')" id="daily">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">
             <div class="app-icon">📅</div>
             <div class="app-title">Daily View</div>
-            <div class="app-description">
-                Consultez votre agenda quotidien et planifiez votre journée avec style rétro.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">
-                Lancer l'application
-            </button>
         </div>
 
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')" id="meteo">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">
             <div class="app-icon">⛅</div>
-            <div class="app-title">Station Météo</div>
-            <div class="app-description">
-                Prévisions météo locales avec interface vintage pour ne jamais être pris au dépourvu.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">
-                Consulter la météo
-            </button>
+            <div class="app-title">Météo</div>
         </div>
 
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')" id="rss">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">
             <div class="app-icon">📡</div>
-            <div class="app-title">Lecteur RSS</div>
-            <div class="app-description">
-                Suivez vos flux d'actualités favoris dans une interface nostalgique des années 2000.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/rss.html')">
-                Lire les flux
-            </button>
+            <div class="app-title">RSS</div>
         </div>
 
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')" id="todo">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">
             <div class="app-icon">📝</div>
-            <div class="app-title">Gestionnaire de Tâches</div>
-            <div class="app-description">
-                Organisez vos tâches quotidiennes avec un design inspiré des applications vintage.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">
-                Gérer les tâches
-            </button>
+            <div class="app-title">Todo</div>
         </div>
 
-        <div class="app-card" onclick="openApp('https://pomofocus.io/')" id="pomodoro">
+        <div class="app-card" onclick="openApp('https://pomofocus.io/')">
             <div class="app-icon">🍅</div>
-            <div class="app-title">Timer Pomodoro</div>
-            <div class="app-description">
-                Technique Pomodoro pour améliorer votre productivité avec des sessions de travail focalisées.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://pomofocus.io/')">
-                Démarrer une session
-            </button>
+            <div class="app-title">Pomodoro</div>
         </div>
 
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')" id="toolbox">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">
             <div class="app-icon">🧰</div>
-            <div class="app-title">Boîte à Outils</div>
-            <div class="app-description">
-                Collection d'utilitaires pratiques pour le développement et la productivité au quotidien.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">
-                Ouvrir la toolbox
-            </button>
+            <div class="app-title">Toolbox</div>
         </div>
 
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')" id="feedbacks">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">
             <div class="app-icon">💬</div>
-            <div class="app-title">Centre de Feedback</div>
-            <div class="app-description">
-                Partagez vos retours et suggestions pour améliorer cette suite d'applications rétro.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">
-                Donner un feedback
-            </button>
+            <div class="app-title">Feedbacks</div>
         </div>
 
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')" id="simpletab">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">
             <div class="app-icon">🌐</div>
-            <div class="app-title">SimpleTab HTML</div>
-            <div class="app-description">
-                Page d'accueil minimaliste avec vos raccourcis web essentiels dans l'esprit vintage.
-            </div>
-            <button class="app-button" onclick="event.stopPropagation(); openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">
-                Ouvrir SimpleTab
-            </button>
+            <div class="app-title">SimpleTab</div>
         </div>
     </main>
 
     <footer class="footer">
-        <p>🖥️ Retro Productivity Hub © 2025 - Nostalgie des années 2000 ✨</p>
+        <p>CYBER HUB © 2085</p>
     </footer>
 
     <script>
         function openApp(url) {
-            // Animation de clic
-            const clickedCard = event.currentTarget || event.target.closest('.app-card');
-            if (clickedCard) {
-                clickedCard.style.transform = 'translateY(3px)';
-                setTimeout(() => {
-                    clickedCard.style.transform = 'translateY(0)';
-                }, 150);
-            }
-            
-            // Ouvrir dans un nouvel onglet
             window.open(url, '_blank');
         }
 
@@ -338,24 +370,31 @@
             }
         });
 
-        // Animation d'apparition séquentielle des cartes
+        // Animation d'apparition séquentielle
         window.addEventListener('load', () => {
             const cards = document.querySelectorAll('.app-card');
             cards.forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animationDelay = `${index * 0.15}s`;
             });
         });
 
-        // Smooth scroll pour les liens de navigation
-        document.querySelectorAll('.navbar a[href^="#"]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            });
+        // Effet de cursor glow
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.createElement('div');
+            cursor.style.position = 'fixed';
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+            cursor.style.background = 'radial-gradient(circle, #00ff4150, transparent)';
+            cursor.style.borderRadius = '50%';
+            cursor.style.pointerEvents = 'none';
+            cursor.style.zIndex = '999';
+            document.body.appendChild(cursor);
+            
+            setTimeout(() => {
+                cursor.remove();
+            }, 100);
         });
     </script>
 </body>
