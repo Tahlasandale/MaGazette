@@ -42,7 +42,7 @@
       padding: 1.5rem;
       margin-top: 1rem;
       width: 100%;
-      max-width: 420px;
+      max-width: 100%;
       box-shadow: 0 0 20px #00fff788, 0 0 8px #ff4ecd44;
     }
     
@@ -206,6 +206,37 @@
     }
     
     /* Media queries pour une meilleure adaptation */
+    @media (min-width: 769px) {
+      body {
+        padding: 20px;
+      }
+      
+      .panel {
+        padding: 3rem;
+        max-width: 95%;
+        margin: 2rem auto;
+      }
+      
+      .feedbacks {
+        max-height: 60vh;
+        padding: 2rem;
+      }
+      
+      textarea {
+        min-height: 120px;
+      }
+      
+      .links {
+        margin-bottom: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) and (min-width: 481px) {
+      .panel {
+        max-width: 90%;
+      }
+    }
+    
     @media (max-width: 480px) {
       body {
         padding: 5px;
@@ -215,6 +246,7 @@
         padding: 1rem;
         border-radius: 12px;
         margin-top: 0.5rem;
+        max-width: 420px;
       }
       
       h1 {
@@ -410,7 +442,7 @@
   <div class="panel">
     <div class="links">
       <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">📝 SimpleTabHTML</a>
-      <a href="https://chatgpt.com/share/68b74c3d-d28c-8010-a231-e5fbde264f0d" target="_blank">🎤 GPT Vocal</a>
+      <a href="https://chatgpt.com" target="_blank">🎤 ChatGPT</a>
     </div>
     <form id="form" autocomplete="off">
       <label for="content">Ton feedback (texte) :</label>
