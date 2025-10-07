@@ -63,7 +63,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             padding: 20px;
             background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
             border: 1px solid #00ff41;
@@ -90,6 +90,89 @@
                 0 0 15px #ffff00,
                 inset 0 0 15px #ffff0020;
             transform: translateY(-2px);
+        }
+
+        .clock-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #ff0066;
+            clip-path: polygon(30px 0%, 100% 0%, calc(100% - 30px) 100%, 0% 100%);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .clock {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ff0066;
+            text-shadow: 
+                0 0 15px #ff0066,
+                0 0 30px #ff006680;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            font-size: 1.2rem;
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff0080;
+            letter-spacing: 2px;
+        }
+
+        .goals-section {
+            max-width: 800px;
+            margin: 0 auto 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #00ff41;
+            clip-path: polygon(25px 0%, 100% 0%, calc(100% - 25px) 100%, 0% 100%);
+        }
+
+        .goals-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #00ff41;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px #00ff4180;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            border-left: 3px solid #ffff00;
+            clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+            transition: all 0.3s ease;
+        }
+
+        .goal-item:hover {
+            border-left-color: #ff0066;
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+        }
+
+        .goal-number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffff00;
+            min-width: 30px;
+            text-shadow: 0 0 10px #ffff0080;
+        }
+
+        .goal-text {
+            font-size: 1.1rem;
+            color: #00ff41;
+            line-height: 1.6;
+            letter-spacing: 1px;
         }
 
         .apps-gallery {
@@ -204,6 +287,34 @@
                 font-size: 0.8rem;
                 padding: 8px 16px;
             }
+
+            .clock {
+                font-size: 2.5rem;
+            }
+
+            .date {
+                font-size: 1rem;
+            }
+
+            .goals-section {
+                padding: 20px;
+            }
+
+            .goals-title {
+                font-size: 1.4rem;
+            }
+
+            .goal-item {
+                padding: 12px;
+            }
+
+            .goal-number {
+                font-size: 1.2rem;
+            }
+
+            .goal-text {
+                font-size: 0.95rem;
+            }
             
             .app-card {
                 padding: 25px 15px;
@@ -281,45 +392,41 @@
     </div>
 
     <nav class="navbar">
-        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">DAILY</a>
-        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">MÉTÉO</a>
-        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">RSS</a>
         <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">TODO</a>
-        <a href="#" onclick="openApp('https://pomofocus.io/')">POMODORO</a>
-        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">TOOLBOX</a>
         <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">FEEDBACK</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">RSS</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">MÉTÉO</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">TOOLBOX</a>
         <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">SIMPLETAB</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">DAILY</a>
+        <a href="#" onclick="openApp('https://pomofocus.io/')">POMODORO</a>
     </nav>
 
+    <div class="clock-section">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date">LOADING...</div>
+    </div>
+
+    <section class="goals-section">
+        <h2 class="goals-title">Objectifs Long Terme</h2>
+        <div class="goal-item">
+            <div class="goal-number">1.</div>
+            <div class="goal-text">Révision active des CM via fiches tenues à jour</div>
+        </div>
+        <div class="goal-item">
+            <div class="goal-number">2.</div>
+            <div class="goal-text">Pause mentale confiante quotidienne</div>
+        </div>
+        <div class="goal-item">
+            <div class="goal-number">3.</div>
+            <div class="goal-text">Prière matin et soir</div>
+        </div>
+    </section>
+
     <main class="apps-gallery">
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">
-            <div class="app-icon">📅</div>
-            <div class="app-title">Daily View</div>
-        </div>
-
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">
-            <div class="app-icon">⛅</div>
-            <div class="app-title">Météo</div>
-        </div>
-
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">
-            <div class="app-icon">📡</div>
-            <div class="app-title">RSS</div>
-        </div>
-
         <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">
             <div class="app-icon">📝</div>
             <div class="app-title">Todo</div>
-        </div>
-
-        <div class="app-card" onclick="openApp('https://pomofocus.io/')">
-            <div class="app-icon">🍅</div>
-            <div class="app-title">Pomodoro</div>
-        </div>
-
-        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">
-            <div class="app-icon">🧰</div>
-            <div class="app-title">Toolbox</div>
         </div>
 
         <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">
@@ -327,9 +434,34 @@
             <div class="app-title">Feedbacks</div>
         </div>
 
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">
+            <div class="app-icon">📡</div>
+            <div class="app-title">RSS</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">
+            <div class="app-icon">⛅</div>
+            <div class="app-title">Météo</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">
+            <div class="app-icon">🧰</div>
+            <div class="app-title">Toolbox</div>
+        </div>
+
         <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">
             <div class="app-icon">🌐</div>
             <div class="app-title">SimpleTab</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">
+            <div class="app-icon">📅</div>
+            <div class="app-title">Daily View</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://pomofocus.io/')">
+            <div class="app-icon">🍅</div>
+            <div class="app-title">Pomodoro</div>
         </div>
     </main>
 
@@ -338,6 +470,23 @@
     </footer>
 
     <script>
+        function updateClock() {
+            const now = new Date();
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('fr-FR', options).toUpperCase();
+            document.getElementById('date').textContent = dateStr;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
         function openApp(url) {
             window.open(url, '_blank');
         }
@@ -348,11 +497,11 @@
                 switch(e.key) {
                     case '1':
                         e.preventDefault();
-                        openApp('https://tahlasandale.github.io/MaGazette/dalyview.html');
+                        openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html');
                         break;
                     case '2':
                         e.preventDefault();
-                        openApp('https://tahlasandale.github.io/MaGazette/meteo.html');
+                        openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html');
                         break;
                     case '3':
                         e.preventDefault();
@@ -360,7 +509,7 @@
                         break;
                     case '4':
                         e.preventDefault();
-                        openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html');
+                        openApp('https://tahlasandale.github.io/MaGazette/meteo.html');
                         break;
                     case '5':
                         e.preventDefault();
