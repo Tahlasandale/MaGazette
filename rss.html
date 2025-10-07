@@ -3,48 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Actus Tech — RSS</title>
+  <title>Actus Tech — Scroll Infini Amélioré</title>
   <style>
     :root {
       --bg: #ffffff;
       --fg: #000000;
-      --muted: #333333;
+      --muted: #555555;
       --border: #000000;
+      --skeleton-bg: #e0e0e0;
     }
-    html, body { height: 100%; margin: 0; padding: 0; }
+    html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
     body {
-      margin: 0; padding: 24px;
+      margin: 0; padding: 0;
       background: var(--bg);
       color: var(--fg);
       font-family: "Courier New", Courier, monospace;
       line-height: 1.5;
     }
-
     .container { max-width: 960px; margin: 0 auto; padding: 0 12px; }
 
-    h1 {
-      font-size: 28px; font-weight: 700; letter-spacing: 0.5px;
-      margin: 0 0 16px 0;
-      border-bottom: 2px dotted var(--border);
-      padding-bottom: 6px;
-    }
-
+    h1 { font-size: 28px; font-weight: 700; margin: 24px 0 16px 0; border-bottom: 2px dotted var(--border); padding-bottom: 6px; }
     .sub { margin: 0 0 24px 0; font-size: 14px; color: var(--muted); }
 
-    .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; border: 1px solid var(--border); padding: 10px; border-radius: 2px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 2px;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
     .controls label { font-size: 14px; }
 
-    button, select, input[type="number"] {
-      appearance: none; -webkit-appearance: none; -moz-appearance: none;
-      border: 1px solid var(--border); background: var(--bg); color: var(--fg);
-      padding: 8px 10px; border-radius: 2px; font-family: inherit; font-size: 14px;
-    }
-    button { cursor: pointer; }
+    button, select { border: 1px solid var(--border); background: var(--bg); color: var(--fg); padding: 8px 10px; border-radius: 2px; font-family: inherit; font-size: 14px; cursor: pointer; }
     button:hover { filter: invert(100%); }
-    select:hover, input[type="number"]:hover { background: #f5f5f5; }
+    select:hover { background: #f5f5f5; }
 
-    .source-title { font-size: 18px; margin: 28px 0 10px 0; font-weight: 700; display: inline-block; border-bottom: 2px solid var(--border); }
-    .news { border: 1px solid var(--border); padding: 12px; margin-bottom: 10px; border-radius: 2px; background: var(--bg); }
+    .news { border: 1px solid var(--border); padding: 12px; margin-bottom: 10px; border-radius: 2px; background: var(--bg); opacity: 0; transform: translateY(20px); transition: all 0.3s ease; }
+    .news.visible { opacity: 1; transform: translateY(0); }
     .news h2 { font-size: 16px; margin: 0 0 6px 0; }
     .news a { color: var(--fg); text-decoration: underline; text-underline-offset: 2px; }
     .news a:hover { background: #000; color: #fff; }
@@ -53,23 +56,25 @@
     .cursor::after { content: "▌"; margin-left: 6px; animation: blink 1s steps(1,end) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
 
-    footer { margin-top: 40px; text-align: center; font-size: 14px; }
+    .skeleton { height: 80px; background: var(--skeleton-bg); margin-bottom: 10px; border-radius: 2px; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+    footer { text-align: center; font-size: 14px; padding: 40px 0; }
 
     @media(max-width: 600px) {
-      h1 { font-size: 22px; }
+      h1 { font-size: 22px; margin-top: 12px; }
       .controls { flex-direction: column; align-items: flex-start; }
       .news h2 { font-size: 14px; }
-      .source-title { font-size: 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <h1>📰 Actus Tech <span class="cursor"></span></h1>
-    <p class="sub">FrAndroid • Korben • RaspberryTips • Gamekult • Le Journal du Geek • Actuia Hardware and Co • Développez.com — RSS, regroupés par source. Rafraîchir et filtrer sans recharger la page.</p>
+    <p class="sub">Scroll infini continu, bannière sticky corrigée et chargement automatique des articles.</p>
 
-    <div class="controls">
-      <button id="refreshBtn" title="Recharger les flux">🔄 Rafraîchir</button>
+    <div class="controls" id="controls">
+      <button id="refreshBtn">🔄 Rafraîchir</button>
       <label for="filter">Filtre :</label>
       <select id="filter">
         <option value="all">Toutes les sources</option>
@@ -81,18 +86,10 @@
         <option value="www.actuia.com">Actuia Hardware and Co</option>
         <option value="web.developpez.com">Développez.com</option>
       </select>
-      <label for="limit">Articles/source :</label>
-      <input id="limit" type="number" min="1" max="50" value="25" />
-      <label for="autorefresh">Auto-refresh (min) :</label>
-      <input id="autorefresh" type="number" min="0" max="120" value="0" />
     </div>
 
-    <div id="news-container">Chargement…</div>
+    <div id="news-container"></div>
   </div>
-
-  <footer>
-    <button id="footerRefreshBtn">🔄 Rafraîchir</button>
-  </footer>
 
   <script>
     const FEEDS = [
@@ -106,108 +103,79 @@
     ];
 
     let allFeeds = [];
-    let autoTimer = null;
+    let articlesFlat = [];
+    let loadedCount = 0;
+    const BATCH_SIZE = 10;
 
-    document.getElementById('refreshBtn').addEventListener('click', () => loadNews());
-    document.getElementById('footerRefreshBtn').addEventListener('click', () => loadNews());
-    document.getElementById('filter').addEventListener('change', () => render());
-    document.getElementById('limit').addEventListener('change', () => render());
-    document.getElementById('autorefresh').addEventListener('change', onAutoRefreshChange);
-
-    function onAutoRefreshChange() {
-      const mins = parseInt(document.getElementById('autorefresh').value || '0', 10);
-      if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-      if (mins > 0) autoTimer = setInterval(loadNews, mins * 60 * 1000);
-    }
+    const container = document.getElementById('news-container');
 
     async function getRSS(url) {
       const proxy = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url);
       const res = await fetch(proxy);
-      if (!res.ok) throw new Error('Erreur réseau');
       const data = await res.json();
-      if (!data.items || data.items.length === 0) throw new Error('Aucun article trouvé');
-      return data.items.map(item => ({
+      return (data.items || []).map(item => ({
         title: item.title || 'Sans titre',
         link: item.link || '#',
-        description: (item.content || item.description || '').replace(/<script[^>]*>.*?<\/script>/g, '').replace(/<style[^>]*>.*?<\/style>/g, '').replace(/<img[^>]*>/g,'').replace(/\s+/g,' ').trim(),
+        description: (item.content || item.description || '').replace(/<[^>]+>/g, '').trim(),
         date: item.pubDate || '',
-        isoDate: item.pubDate ? new Date(item.pubDate).toISOString() : ''
+        source: new URL(url).hostname
       }));
     }
 
     async function loadNews() {
-      const container = document.getElementById('news-container');
-      container.textContent = 'Chargement…';
-
+      container.innerHTML = '';
       allFeeds = [];
+
       for (const feed of FEEDS) {
-        const source = new URL(feed).hostname;
         try {
           const articles = await getRSS(feed);
-          allFeeds.push({ source, articles });
-        } catch (e) {
-          allFeeds.push({ source, articles: [{ title: 'Erreur de chargement du flux', link: '#', description: String(e.message || e), date: '', isoDate: '' }] });
+          allFeeds.push({ source: new URL(feed).hostname, articles });
+        } catch {
+          allFeeds.push({ source: new URL(feed).hostname, articles: [] });
         }
       }
 
-      render();
+      articlesFlat = allFeeds.flatMap(f => f.articles);
+      articlesFlat.sort((a,b) => new Date(b.date) - new Date(a.date));
+      loadedCount = 0;
+      loadMoreArticles();
     }
 
-    function render() {
-      const container = document.getElementById('news-container');
-      const filter = document.getElementById('filter').value;
-      const limit = Math.max(1, Math.min(50, parseInt(document.getElementById('limit').value || '25', 10)));
-
-      container.innerHTML = '';
-
-      let feedsToRender = [...allFeeds];
-      if (filter === 'all') {
-        feedsToRender = feedsToRender.flatMap(feed => feed.articles.map(a => ({...a, source: feed.source})))
-                                   .sort(() => Math.random() - 0.5)
-                                   .slice(0, limit * feedsToRender.length);
-        feedsToRender.forEach(article => {
-          const div = document.createElement('div');
-          div.className = 'news';
-          const dateTxt = article.date ? `📅 ${article.date}` : '';
-          div.innerHTML = `
-            <h2><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h2>
-            <div class="meta">${dateTxt}</div>
-            <p>${article.description}</p>
-          `;
-          container.appendChild(div);
-        });
-        return;
-      }
-
-      feedsToRender.forEach(feed => {
-        if (filter !== 'all' && feed.source !== filter) return;
-        const title = document.createElement('div');
-        title.className = 'source-title';
-        title.textContent = `🔗 ${feed.source}`;
-        container.appendChild(title);
-
-        feed.articles.slice(0, limit).forEach(article => {
-          const div = document.createElement('div');
-          div.className = 'news';
-          const dateTxt = article.date ? `📅 ${article.date}` : '';
-          div.innerHTML = `
-            <h2><a href="${article.link}" target="_blank" rel="noopener noreferrer">${article.title}</a></h2>
-            <div class="meta">${dateTxt}</div>
-            <p>${article.description}</p>
-          `;
-          container.appendChild(div);
-        });
+    function loadMoreArticles() {
+      const nextBatch = articlesFlat.slice(loadedCount, loadedCount + BATCH_SIZE);
+      nextBatch.forEach(article => {
+        const div = document.createElement('div');
+        div.className = 'news';
+        div.innerHTML = `<h2><a href="${article.link}" target="_blank">${article.title}</a></h2><div class="meta">📅 ${article.date} — ${article.source}</div><p>${article.description}</p>`;
+        container.appendChild(div);
+        requestAnimationFrame(() => div.classList.add('visible'));
       });
+      loadedCount += nextBatch.length;
 
-      if (!container.hasChildNodes()) {
-        const empty = document.createElement('div');
-        empty.textContent = 'Aucun article pour ce filtre.';
-        container.appendChild(empty);
+      if (loadedCount < articlesFlat.length) {
+        setTimeout(loadMoreArticles, 500);
+      } else {
+        articlesFlat = [...articlesFlat, ...articlesFlat];
+        setTimeout(loadMoreArticles, 500);
       }
     }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadNews);
+
+    document.getElementById('filter').addEventListener('change', () => {
+      const filter = document.getElementById('filter').value;
+      if (filter === 'all') {
+        articlesFlat = allFeeds.flatMap(f => f.articles);
+      } else {
+        articlesFlat = allFeeds.filter(f => f.source === filter).flatMap(f => f.articles);
+      }
+      articlesFlat.sort((a,b) => new Date(b.date) - new Date(a.date));
+      loadedCount = 0;
+      container.innerHTML = '';
+      loadMoreArticles();
+    });
 
     loadNews();
-    onAutoRefreshChange();
   </script>
 </body>
 </html>
