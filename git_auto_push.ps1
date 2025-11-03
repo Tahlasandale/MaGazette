@@ -1,5 +1,5 @@
 # ==============================================
-# 🔧 Script d'automatisation Git (PowerShell)
+# Script d'automatisation Git (PowerShell)
 # Auteur : Jooo
 # Repo   : https://github.com/Tahlasandale/preprodhub
 # Branche : main
@@ -20,10 +20,10 @@ git config user.name "$UserName"
 git config user.email "$UserEmail"
 
 # Verification du remote
-Write-Host "🔍 Verification du remote..."
+Write-Host "Verification du remote..."
 $remote = git remote -v | Select-String $RemoteUrl
 if (-not $remote) {
-    Write-Host "🔄 Remote incorrect, mise a jour..."
+    Write-Host "Remote incorrect, mise a jour..."
     git remote set-url origin $RemoteUrl
 }
 
@@ -31,15 +31,15 @@ if (-not $remote) {
 git remote -v
 
 # Pull avec rebase
-Write-Host "⬇️  Pull (rebase) depuis $Branch..."
+Write-Host "Pull (rebase) depuis $Branch..."
 git pull --rebase origin $Branch
 
 # Ajout, commit et push
-Write-Host "📦 Ajout et commit..."
+Write-Host "Ajout et commit..."
 git add -A
 git commit -m "$Message"
 
-Write-Host "🚀 Push vers $Branch..."
+Write-Host "Push vers $Branch..."
 git push -u origin $Branch
 
-Write-Host "✅ Commit et push termines avec succes !"
+Write-Host "Commit et push termines avec succes !"

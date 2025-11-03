@@ -38,11 +38,26 @@
       display: flex;
       gap: 0.5rem;
       width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
     }
     
-    @media (min-width: 480px) {
+    /* Sur mobile, les boutons sont côte à côte */
+    @media (max-width: 479px) {
       .button-group {
+        flex-direction: row;
+        width: 100%;
+      }
+      
+      .button-group button {
+        flex: 1;
+        min-width: 0; /* Permet au bouton de rétrécir si nécessaire */
+      }
+      
+      .button-group .import-btn {
         width: auto;
+        min-width: 60px;
+        flex: 0 0 auto;
       }
     }
     button, .import-btn {
@@ -61,14 +76,24 @@
     }
     
     @media (min-width: 480px) {
-      button, .import-btn {
+      .button-group button {
+        flex: 1;
+      }
+      
+      .import-btn {
         width: auto;
+        min-width: 60px;
+        flex: 0 0 auto;
       }
     }
     .import-btn {
-      padding: 0.6rem;
-      min-width: 40px;
-      flex-shrink: 0;
+      padding: 0.6rem 1rem;
+      min-width: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      height: 100%;
     }
     ul {
       list-style: none; 
