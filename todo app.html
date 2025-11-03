@@ -41,10 +41,6 @@
       padding: 0.6rem;
       width: 40px;
     }
-      background: #fff; color: #000; border: none;
-      padding: 0.6rem 1rem; border-radius: 4px;
-      cursor: pointer; font-weight: bold;
-    }
     ul {
       list-style: none; padding: 0;
       width: 100%; max-width: 400px;
@@ -52,9 +48,42 @@
     li {
       border-bottom: 1px solid #555;
       padding: 0.6rem 0;
-      display: flex; align-items: center;
+      display: flex; 
+      align-items: center;
       gap: 0.75rem;
       cursor: grab;
+      position: relative;
+    }
+    
+    li .task-actions {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 0.25rem;
+      border-radius: 4px;
+      gap: 0.25rem;
+    }
+    
+    li:hover .task-actions {
+      display: flex;
+    }
+    
+    .task-actions button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+    }
+    
+    .task-actions button:hover {
+      background: rgba(255, 255, 255, 0.2);
     }
     li.dragging { opacity: 0.5; }
     li label { flex: 1; cursor: pointer; user-select: none; }
@@ -112,8 +141,48 @@
           <li draggable="true" data-id="${t.id}">
             <input type="checkbox" data-id="${t.id}">
             <label>${t.content}</label>
+            <div class="task-actions">
+              <button class="edit-task" data-id="${t.id}" title="Modifier">✏️</button>
+              <button class="delete-task" data-id="${t.id}" title="Supprimer">❌</button>
+            </div>
           </li>`
       ).join("");
+
+      // Gestion des boutons d'action
+      document.querySelectorAll('.edit-task').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          const task = tasks.find(t => t.id.toString() === id.toString());
+          if (task) {
+            const newContent = prompt('Modifier la tâche :', task.content);
+            if (newContent !== null && newContent.trim() !== '') {
+              updateTask(id, newContent.trim());
+            }
+          }
+        };
+      });
+
+      // Gestion de la suppression
+      document.querySelectorAll('.delete-task').forEach(btn => {
+        btn.onclick = async (e) => {
+          e.stopPropagation();
+          if (confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
+            const id = e.target.closest('button').dataset.id;
+            try {
+              const { error } = await supabase
+                .from("todo")
+                .delete()
+                .eq("id", id);
+              if (error) throw error;
+              loadTasks();
+            } catch (err) {
+              console.error("Erreur lors de la suppression :", err);
+              alert("Erreur lors de la suppression de la tâche.");
+            }
+          }
+        };
+      });
 
       // Checkbox handler
       document.querySelectorAll('#tasks input[type="checkbox"]').forEach(cb => {
@@ -135,6 +204,20 @@
 
       // Drag & Drop
       setupDragAndDrop();
+    }
+
+    async function updateTask(id, newContent) {
+      try {
+        const { error } = await supabase
+          .from("todo")
+          .update({ content: newContent })
+          .eq("id", id);
+        if (error) throw error;
+        loadTasks();
+      } catch (err) {
+        console.error("Erreur lors de la mise à jour :", err);
+        alert("Erreur lors de la modification de la tâche.");
+      }
     }
 
     async function addTask(content) {
