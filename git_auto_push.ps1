@@ -10,7 +10,7 @@ param(
     [string]$Message
 )
 
-$RemoteUrl = "https://github.com/Tahlasandale/preprodhub"
+$RemoteUrl = "https://github.com/Tahlasandale/MaGazette"
 $Branch = "main"
 $UserName = "Jooo"
 $UserEmail = "mixjojo2006@gmail.com"
