@@ -24,7 +24,23 @@
       border: 1px solid #fff; border-radius: 4px;
       background: #000; color: #fff;
     }
-    button {
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    button, .import-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff; color: #000; border: none;
+      padding: 0.6rem 1rem; border-radius: 4px;
+      cursor: pointer; font-weight: bold;
+      white-space: nowrap;
+    }
+    .import-btn {
+      padding: 0.6rem;
+      width: 40px;
+    }
       background: #fff; color: #000; border: none;
       padding: 0.6rem 1rem; border-radius: 4px;
       cursor: pointer; font-weight: bold;
@@ -174,13 +190,68 @@
       });
     }
 
+    async function importCSV(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target.result;
+          // Séparer les lignes et traiter chaque ligne comme une entrée CSV
+          const lines = content.split('\n');
+          const tasks = [];
+          
+          lines.forEach(line => {
+            // Supprimer les guillemets et espaces inutiles
+            const cleanLine = line.trim().replace(/^"|"$/g, '');
+            if (cleanLine) {
+              // Séparer les tâches par virgule
+              const tasksInLine = cleanLine.split(',').map(t => t.trim()).filter(t => t);
+              tasks.push(...tasksInLine);
+            }
+          });
+          
+          resolve(tasks);
+        };
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+      // Gestion du formulaire d'ajout de tâche
       document.getElementById("form").onsubmit = (e) => {
         e.preventDefault();
         const content = document.getElementById("content").value.trim();
         if (content) addTask(content);
         e.target.reset();
       };
+
+      // Gestion de l'importation CSV
+      document.getElementById("csv-import").addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        try {
+          const tasks = await importCSV(file);
+          if (tasks && tasks.length > 0) {
+            // Ajouter chaque tâche une par une
+            for (const task of tasks) {
+              if (task) {
+                await new Promise(resolve => setTimeout(resolve, 100)); // Petit délai pour éviter les problèmes de concurrence
+                await addTask(task);
+              }
+            }
+            // Recharger la liste complète à la fin
+            loadTasks();
+          }
+        } catch (error) {
+          console.error("Erreur lors de l'importation du fichier:", error);
+          alert("Erreur lors de la lecture du fichier CSV.");
+        } finally {
+          // Réinitialiser l'input pour permettre la sélection du même fichier à nouveau
+          e.target.value = '';
+        }
+      });
+
       loadTasks();
     });
   </script>
@@ -190,7 +261,11 @@
   <div id="counter" class="counter">Tâches terminées : 0</div>
   <form id="form" autocomplete="off">
     <input type="text" id="content" placeholder="Nouvelle tâche..." />
-    <button type="submit">Ajouter</button>
+    <div class="button-group">
+      <button type="submit">Ajouter</button>
+      <label for="csv-import" class="import-btn" title="Importer un fichier CSV">📄</label>
+      <input type="file" id="csv-import" accept=".csv" style="display: none;" />
+    </div>
   </form>
   <ul id="tasks"></ul>
 </body>
