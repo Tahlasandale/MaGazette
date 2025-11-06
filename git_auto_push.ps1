@@ -1,7 +1,7 @@
 # ==============================================
 # Script d'automatisation Git (PowerShell)
 # Auteur : Jooo
-# Repo   : https://github.com/Tahlasandale/preprodhub
+# Repo   : https://github.com/Tahlasandale/MaGazette
 # Branche : main
 # ==============================================
 
