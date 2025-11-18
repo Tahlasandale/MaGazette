@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER PRODUCTIVITY HUB</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #0a0a0a;
+            color: #00ff41;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #ff006620 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, #00ff4120 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #00ff4130 0%, transparent 70%);
+            z-index: -1;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: #00ff41;
+            text-shadow: 
+                0 0 10px #00ff41,
+                0 0 20px #00ff4180,
+                0 0 40px #00ff4160;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .navbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 1px solid #00ff41;
+            clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+        }
+
+        .navbar a {
+            color: #ffff00;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border: 1px solid #ffff00;
+            clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, #ffff0020, #ffff0010);
+            box-shadow: 
+                0 0 15px #ffff00,
+                inset 0 0 15px #ffff0020;
+            transform: translateY(-2px);
+        }
+
+        .clock-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #ff0066;
+            clip-path: polygon(30px 0%, 100% 0%, calc(100% - 30px) 100%, 0% 100%);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .clock {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #ff0066;
+            text-shadow: 
+                0 0 15px #ff0066,
+                0 0 30px #ff006680;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            font-size: 1.2rem;
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff0080;
+            letter-spacing: 2px;
+        }
+
+        .goals-section {
+            max-width: 800px;
+            margin: 0 auto 50px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #00ff41;
+            clip-path: polygon(25px 0%, 100% 0%, calc(100% - 25px) 100%, 0% 100%);
+        }
+
+        .goals-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #00ff41;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px #00ff4180;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            border-left: 3px solid #ffff00;
+            clip-path: polygon(15px 0%, 100% 0%, calc(100% - 15px) 100%, 0% 100%);
+            transition: all 0.3s ease;
+        }
+
+        .goal-item:hover {
+            border-left-color: #ff0066;
+            transform: translateX(5px);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+        }
+
+        .goal-number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #ffff00;
+            min-width: 30px;
+            text-shadow: 0 0 10px #ffff0080;
+        }
+
+        .goal-text {
+            font-size: 1.1rem;
+            color: #00ff41;
+            line-height: 1.6;
+            letter-spacing: 1px;
+        }
+
+        .apps-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+            border: 2px solid #00ff41;
+            clip-path: polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%);
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #00ff4120, transparent);
+            transition: left 0.5s;
+        }
+
+        .app-card:hover::before {
+            left: 100%;
+        }
+
+        .app-card:hover {
+            border-color: #ffff00;
+            background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 10px 30px rgba(0, 255, 65, 0.3),
+                0 0 50px rgba(255, 255, 0, 0.1);
+        }
+
+        .app-card:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .app-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 0 10px #00ff41);
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00ff41;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ff4180;
+        }
+
+        .app-card:hover .app-title {
+            color: #ffff00;
+            text-shadow: 0 0 15px #ffff0080;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            color: #ff0066;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #ff006680;
+        }
+
+        /* Responsive design */
+        @media (min-width: 768px) {
+            .apps-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .apps-gallery {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+                letter-spacing: 2px;
+            }
+            
+            .navbar {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .navbar a {
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+
+            .clock {
+                font-size: 2.5rem;
+            }
+
+            .date {
+                font-size: 1rem;
+            }
+
+            .goals-section {
+                padding: 20px;
+            }
+
+            .goals-title {
+                font-size: 1.4rem;
+            }
+
+            .goal-item {
+                padding: 12px;
+            }
+
+            .goal-number {
+                font-size: 1.2rem;
+            }
+
+            .goal-text {
+                font-size: 0.95rem;
+            }
+            
+            .app-card {
+                padding: 25px 15px;
+            }
+            
+            .app-icon {
+                font-size: 3rem;
+                margin-bottom: 15px;
+            }
+            
+            .app-title {
+                font-size: 1rem;
+                letter-spacing: 1px;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .app-card {
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Glitch effect sur le titre */
+        .header h1:hover {
+            animation: glitch 0.3s;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Scanlines effect */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 65, 0.03) 2px,
+                rgba(0, 255, 65, 0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CYBER HUB</h1>
+    </div>
+
+    <nav class="navbar">
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">DAILY</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">FEEDBACK</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">MÉTÉO</a>
+        <a href="#" onclick="openApp('https://pomofocus.io/')">POMODORO</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">RSS</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">SIMPLETAB</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/tabata-matrix.html')">TABATA</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">TODO</a>
+        <a href="#" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">TOOLBOX</a>
+    </nav>
+
+    <div class="clock-section">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date">LOADING...</div>
+    </div>
+
+    <section class="goals-section">
+        <h2 class="goals-title">Objectifs Long Terme</h2>
+        <div class="goal-item">
+            <div class="goal-number">1.</div>
+            <div class="goal-text">Révision active des CM via fiches tenues à jour</div>
+        </div>
+        <div class="goal-item">
+            <div class="goal-number">2.</div>
+            <div class="goal-text">Pause mentale confiante quotidienne</div>
+        </div>
+        <div class="goal-item">
+            <div class="goal-number">3.</div>
+            <div class="goal-text">Prière matin et soir</div>
+        </div>
+    </section>
+
+    <main class="apps-gallery">
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html')">
+            <div class="app-icon">📝</div>
+            <div class="app-title">Todo</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html')">
+            <div class="app-icon">💬</div>
+            <div class="app-title">Feedbacks</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/rss.html')">
+            <div class="app-icon">📡</div>
+            <div class="app-title">RSS</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/meteo.html')">
+            <div class="app-icon">⛅</div>
+            <div class="app-title">Météo</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/toolbox.html')">
+            <div class="app-icon">🧰</div>
+            <div class="app-title">Toolbox</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html')">
+            <div class="app-icon">🌐</div>
+            <div class="app-title">SimpleTab</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://tahlasandale.github.io/MaGazette/dalyview.html')">
+            <div class="app-icon">📅</div>
+            <div class="app-title">Daily View</div>
+        </div>
+
+        <div class="app-card" onclick="openApp('https://pomofocus.io/')">
+            <div class="app-icon">🍅</div>
+            <div class="app-title">Pomodoro</div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>CYBER HUB © 2085</p>
+    </footer>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('fr-FR', options).toUpperCase();
+            document.getElementById('date').textContent = dateStr;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        function openApp(url) {
+            window.open(url, '_blank');
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/todo%20app.html');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/feedbacks.html');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/rss.html');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        openApp('https://tahlasandale.github.io/MaGazette/meteo.html');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        openApp('https://pomofocus.io/');
+                        break;
+                }
+            }
+        });
+
+        // Animation d'apparition séquentielle
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.app-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.15}s`;
+            });
+        });
+
+        // Effet de cursor glow
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.createElement('div');
+            cursor.style.position = 'fixed';
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+            cursor.style.background = 'radial-gradient(circle, #00ff4150, transparent)';
+            cursor.style.borderRadius = '50%';
+            cursor.style.pointerEvents = 'none';
+            cursor.style.zIndex = '999';
+            document.body.appendChild(cursor);
+            
+            setTimeout(() => {
+                cursor.remove();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

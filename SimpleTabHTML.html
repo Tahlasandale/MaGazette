@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimpleTabHTML</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      overflow: hidden;
+    }
+
+    /* Zone du canvas */
+    .canvas-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      border: 2px solid #333;
+      background-color: white;
+    }
+
+    /* Barre d'outils */
+    .toolbar {
+      width: 50px;
+      background: #333;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      box-shadow: 3px 0 5px rgba(0, 0, 0, 0.2);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      z-index: 100;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Bouton Masquer dans la barre */
+    .toggle-btn {
+      background: #555;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    /* Bouton Afficher en haut à gauche */
+    .show-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 40px;
+      height: 40px;
+      background: #333;
+      color: white;
+      border-radius: 5px;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 200;
+    }
+
+    .show-btn:hover {
+      background-color: #555;
+    }
+
+    /* Menu central */
+    .menu {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      border: 2px solid #333;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      z-index: 300;
+    }
+
+    .menu button {
+      background-color: #28a745;
+    }
+
+    .menu button:hover {
+      background-color: #218838;
+    }
+
+    .color-picker {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .size-picker {
+      width: 100%;
+      margin: 10px 0;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Barre d'outils -->
+  <div class="toolbar" id="toolbar">
+    <button class="toggle-btn" id="toggleBtn">⬅</button>
+    <button id="clearButton">🧹</button> <!-- Effacer tout -->
+    <button id="saveButton">💾</button> <!-- Enregistrer -->
+    <!-- Bouton pour importer une image -->
+    <button id="importButton">📂</button> <!-- Bouton pour importer une image -->
+    <input type="file" id="imageInput" accept="image/*" style="display: none;"> <!-- Input pour l'importation -->
+    <button id="styloButton">🖊️</button> <!-- Stylo -->
+    <button id="surligneurButton">🖍️</button> <!-- Surligneur -->
+    <button id="gommeButton">🧽</button> <!-- Gomme -->
+    <button id="undoButton">↩️</button> <!-- Undo -->
+    <button id="redoButton">🔁</button> <!-- Redo -->
+    <button id="menuButton">⚙️</button> <!-- Menu -->
+  </div>
+
+  <!-- Bouton pour afficher la barre -->
+  <button class="show-btn" id="showBtn">➡</button>
+
+  <!-- Menu -->
+  <div class="menu" id="menu">
+    <h3>Paramètres</h3>
+
+    <label for="styloColor">Couleur du stylo :</label>
+    <input type="color" id="styloColor" class="color-picker">
+
+    <label for="surligneurColor">Couleur du surligneur :</label>
+    <input type="color" id="surligneurColor" class="color-picker">
+
+    <label for="gommeSize">Taille de la gomme :</label>
+    <input type="range" id="gommeSize" class="size-picker" min="10" max="100" value="60">
+
+    <button id="closeMenu">Fermer</button>
+  </div>
+
+  <!-- Zone du canvas -->
+  <div class="canvas-container">
+    <canvas id="noteCanvas"></canvas>
+  </div>
+
+  <script>
+    const toolbar = document.getElementById('toolbar');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const showBtn = document.getElementById('showBtn');
+    const menuButton = document.getElementById('menuButton');
+    const menu = document.getElementById('menu');
+    const closeMenuButton = document.getElementById('closeMenu');
+    const canvas = document.getElementById('noteCanvas');
+    const ctx = canvas.getContext('2d');
+    const clearButton = document.getElementById('clearButton');
+    const saveButton = document.getElementById('saveButton');
+    const undoButton = document.getElementById('undoButton');
+    const redoButton = document.getElementById('redoButton');
+    const styloButton = document.getElementById('styloButton');
+    const surligneurButton = document.getElementById('surligneurButton');
+    const gommeButton = document.getElementById('gommeButton');
+    const styloColorPicker = document.getElementById('styloColor');
+    const surligneurColorPicker = document.getElementById('surligneurColor');
+    const gommeSizePicker = document.getElementById('gommeSize');
+
+    let isDrawing = false;
+    let currentTool = 'stylo';  // Par défaut, le stylo est sélectionné
+    let currentStyloColor = '#000000'; // Stylo noir par défaut
+    let currentSurligneurColor = 'rgba(0, 0, 255, 0.05)'; // Surligneur bleu clair avec opacité 0.05
+    let gommeSize = 60; // Taille de la gomme par défaut
+
+    // Piles pour l'undo et redo
+    let drawingHistory = [];
+    let undoneHistory = [];
+
+    
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    // Initialiser la taille du canvas
+    resizeCanvas();
+
+    function saveDrawingState() {
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      drawingHistory.push(imageData);
+      undoneHistory = []; // On vide l'historique redo quand un nouveau dessin est fait
+    }
+
+    saveDrawingState();
+
+    function getPosition(event) {
+      const rect = canvas.getBoundingClientRect();
+      if (event.touches) {
+        return {
+          x: event.touches[0].clientX - rect.left,
+          y: event.touches[0].clientY - rect.top
+        };
+      }
+      return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      };
+    }
+
+    function startDrawing(event) {
+      if (event.touches && event.touches.length > 1) {
+        isDrawing = false;
+        return;
+      }
+      event.preventDefault();
+      isDrawing = true;
+      const pos = getPosition(event);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function draw(event) {
+      if (!isDrawing) return;
+      event.preventDefault();
+      const pos = getPosition(event);
+
+      // Si on utilise le stylo
+      if (currentTool === 'stylo') {
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = currentStyloColor; // Utiliser la couleur du stylo
+      } else if (currentTool === 'surligneur') {
+        // Si on utilise le surligneur
+        ctx.lineWidth = 45;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = currentSurligneurColor; // Utiliser la couleur du surligneur
+      } else if (currentTool === 'gomme') {
+        // Si on utilise la gomme
+        ctx.lineWidth = gommeSize; // Utiliser la taille de la gomme
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 1)'; // Blanc (effacer)
+      }
+
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      ctx.beginPath();
+      saveDrawingState();
+    }
+
+    function undo() {
+      if (drawingHistory.length > 1) {
+        undoneHistory.push(drawingHistory.pop());
+        const lastState = drawingHistory[drawingHistory.length - 1];
+        ctx.putImageData(lastState, 0, 0);
+      }
+    }
+
+    function redo() {
+      if (undoneHistory.length > 0) {
+        const state = undoneHistory.pop();
+        ctx.putImageData(state, 0, 0);
+        drawingHistory.push(state);
+      }
+    }
+
+    // Écouteurs pour la souris
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    // Écouteurs pour le tactile
+    canvas.addEventListener('touchstart', startDrawing, { passive: true });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+
+    clearButton.addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawingHistory = [];
+      undoneHistory = [];
+      saveDrawingState(); // Enregistrer l'état après nettoyage
+    });
+
+    // Enregistrer l'image directement en JPG
+    saveButton.addEventListener('click', () => {
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+
+    // Assurez-vous que le canvas temporaire a la même taille que le canvas principal
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+
+    // Remplir le fond en blanc
+    tempCtx.fillStyle = '#FFFFFF';
+    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+    // Copier le contenu du canvas principal
+    tempCtx.drawImage(canvas, 0, 0);
+
+    // Convertir en image JPG avec un fond blanc
+    const image = tempCanvas.toDataURL('image/jpeg', 1.0);
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = 'note_manuelle.jpg';
+    link.click();
+});
+
+
+    // Masquer la barre d'outils et afficher le bouton "Afficher"
+    toggleBtn.addEventListener('click', () => {
+      toolbar.style.transform = 'translateX(-100%)'; // Masquer complètement
+      showBtn.style.display = 'block';
+    });
+
+    // Réafficher la barre d'outils
+    showBtn.addEventListener('click', () => {
+      toolbar.style.transform = 'translateX(0)';
+      showBtn.style.display = 'none';
+    });
+
+    // Écouteurs pour Undo et Redo
+    undoButton.addEventListener('click', undo);
+    redoButton.addEventListener('click', redo);
+
+    // Changer l'outil en Stylo, Surligneur ou Gomme
+    styloButton.addEventListener('click', () => {
+      currentTool = 'stylo';
+    });
+
+    surligneurButton.addEventListener('click', () => {
+      currentTool = 'surligneur';
+    });
+
+    gommeButton.addEventListener('click', () => {
+      currentTool = 'gomme';
+    });
+
+    // Ouvrir et fermer le menu
+    menuButton.addEventListener('click', () => {
+      menu.style.display = 'block';
+    });
+
+    closeMenuButton.addEventListener('click', () => {
+      menu.style.display = 'none';
+    });
+
+    // Écouteurs pour les choix de couleur
+    styloColorPicker.addEventListener('input', (event) => {
+      currentStyloColor = event.target.value;
+    });
+
+    surligneurColorPicker.addEventListener('input', (event) => {
+      // Assurez-vous que l'opacité est bien de 0.05
+      currentSurligneurColor = event.target.value + '08'; // Ajoute une opacité fixe de 0.05
+    });
+
+    // Écouteur pour la taille de la gomme
+    gommeSizePicker.addEventListener('input', (event) => {
+      gommeSize = event.target.value; // Mettre à jour la taille de la gomme
+    });
+
+    // Raccourcis clavier
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Tab') { // Afficher/Masquer la barre d'outils
+        event.preventDefault();
+        if (toolbar.style.transform === 'translateX(-100%)') {
+          toolbar.style.transform = 'translateX(0)';
+          showBtn.style.display = 'none';
+        } else {
+          toolbar.style.transform = 'translateX(-100%)';
+          showBtn.style.display = 'block';
+        }
+      }
+
+      if (event.ctrlKey && event.key === 'z') { // Ctrl + Z pour Undo
+        undo();
+      }
+
+      if (event.ctrlKey && event.shiftKey && event.key === 'Z') { // Ctrl + Shift + Z pour Redo
+        redo();
+      }
+
+      if (event.key === 'Delete' || event.key === 'Backspace') { // Suppr pour effacer
+        clearButton.click();
+      }
+
+      if (event.ctrlKey && event.key === 's') { // Ctrl + S pour sauvegarder
+        saveButton.click();
+      }
+    });
+
+    const importButton = document.getElementById('importButton');
+const imageInput = document.getElementById('imageInput');
+
+importButton.addEventListener('click', () => {
+  imageInput.click(); // Lors du clic sur le bouton, ouvrir le sélecteur de fichiers
+});
+
+imageInput.addEventListener('change', (event) => {
+  const file = event.target.files[0]; // Récupérer le fichier sélectionné
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        drawImageOnCanvas(img); // Appeler la fonction pour dessiner l'image sur le canevas
+      };
+      img.src = e.target.result; // Définir la source de l'image
+    };
+    reader.readAsDataURL(file); // Lire l'image comme une URL
+  }
+});
+
+document.addEventListener('keydown', (event) => {
+  // Vérifie si la touche Ctrl (ou Cmd sur Mac) et O sont pressées en même temps
+  if ((event.ctrlKey || event.metaKey) && event.key === 'o') {
+    event.preventDefault(); // Empêche l'action par défaut (par exemple, ouverture d'un fichier)
+    imageInput.click(); // Ouvre le sélecteur de fichiers
+  }
+});
+
+
+function drawImageOnCanvas(img) {
+  const canvas = document.getElementById('noteCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Calcul du facteur d'échelle pour ne pas déformer l'image
+  let scaleFactor = Math.min(canvas.width / img.width, canvas.height / img.height);
+  let newWidth = img.width * scaleFactor;
+  let newHeight = img.height * scaleFactor;
+
+  // Centrage de l'image sur le canevas
+  let xOffset = (canvas.width - newWidth) / 2;
+  let yOffset = (canvas.height - newHeight) / 2;
+
+  // Dessiner l'image redimensionnée sur le canevas
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // Nettoie le canevas avant d'afficher l'image
+  ctx.drawImage(img, xOffset, yOffset, newWidth, newHeight);
+}
+
+  </script>
+
+</body>
+</html>

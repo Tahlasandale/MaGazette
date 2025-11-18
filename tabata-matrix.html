@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabata Matrix Timer</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --matrix-green: #00ff41;
+      --matrix-dark: #0d0208;
+      --matrix-bg: #001a00;
+      --glow-size: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: 'Courier New', 'Consolas', monospace;
+      background: linear-gradient(180deg, var(--matrix-dark) 0%, var(--matrix-bg) 100%);
+      color: var(--matrix-green);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow-x: hidden;
+    }
+
+    #app {
+      max-width: 600px;
+      width: 100%;
+      border: 2px solid var(--matrix-green);
+      border-radius: 8px;
+      padding: 2rem;
+      background: rgba(0, 26, 0, 0.8);
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--matrix-green);
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      letter-spacing: 0.3em;
+      text-shadow: 0 0 10px var(--matrix-green);
+      animation: flicker 3s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.95; }
+    }
+
+    main {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    #timer-display {
+      font-size: clamp(4rem, 15vw, 8rem);
+      font-weight: bold;
+      line-height: 1;
+      margin: 1rem 0;
+      text-shadow: 0 0 20px var(--matrix-green);
+      letter-spacing: 0.1em;
+    }
+
+    #phase-label {
+      font-size: clamp(1.5rem, 5vw, 3rem);
+      letter-spacing: 0.5em;
+      margin: 1rem 0;
+      padding: 0.5rem;
+      border: 1px solid var(--matrix-green);
+      display: inline-block;
+      min-width: 200px;
+    }
+
+    #phase-label.work {
+      background: rgba(0, 255, 65, 0.1);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    }
+
+    #phase-label.rest {
+      background: rgba(0, 100, 20, 0.1);
+      opacity: 0.7;
+    }
+
+    #progress-container {
+      margin: 2rem auto;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    #progress-bar {
+      width: 100%;
+      height: 20px;
+      background: rgba(0, 255, 65, 0.1);
+      border: 1px solid var(--matrix-green);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #progress-fill {
+      height: 100%;
+      background: var(--matrix-green);
+      box-shadow: 0 0 10px var(--matrix-green);
+      transition: width 0.3s linear;
+      width: 0%;
+    }
+
+    #info {
+      margin: 1.5rem 0;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    #info div {
+      margin: 0.5rem 0;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 1.1rem;
+      padding: 0.8rem 2rem;
+      background: transparent;
+      color: var(--matrix-green);
+      border: 2px solid var(--matrix-green);
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: all 0.2s;
+      min-width: 120px;
+    }
+
+    button:hover:not(:disabled) {
+      background: rgba(0, 255, 65, 0.2);
+      box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+      transform: translateY(-2px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    button:focus {
+      outline: 2px solid var(--matrix-green);
+      outline-offset: 2px;
+    }
+
+    .options {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--matrix-green);
+    }
+
+    .status {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      #app {
+        padding: 1rem;
+      }
+      
+      .controls {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>TABATA MATRIX</h1>
+    </header>
+
+    <main role="main">
+      <div id="timer-display" role="timer" aria-live="polite" aria-atomic="true">30:00</div>
+      <div id="phase-label" class="work" aria-live="polite">READY</div>
+      
+      <div id="progress-container">
+        <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div id="info" aria-live="polite">
+        <div id="cycle-info">Cycle: 0 / 7</div>
+        <div id="session-info">Session: 00:00 / 30:00</div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="controls">
+        <button id="startBtn" aria-label="Démarrer le timer">START</button>
+        <button id="pauseBtn" aria-label="Mettre en pause" disabled>PAUSE</button>
+        <button id="resetBtn" aria-label="Réinitialiser">RESET</button>
+      </div>
+
+      <div class="options">
+        <label>
+          <input type="checkbox" id="muteCheckbox" aria-label="Couper le son">
+          <span>MUTE</span>
+        </label>
+      </div>
+
+      <div class="status">
+        <span id="statusText">Press SPACE to start | R to reset | M to mute</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ============================================================================
+    // CONFIGURATION & CONSTANTS
+    // ============================================================================
+    const TOTAL_DURATION_SEC = 1800; // 30 minutes
+    const WORK_DURATION_SEC = 180;   // 3 minutes
+    const REST_DURATION_SEC = 60;    // 1 minute
+    const CYCLE_DURATION_SEC = WORK_DURATION_SEC + REST_DURATION_SEC; // 240s
+
+    // ============================================================================
+    // PHASE CALCULATION
+    // ============================================================================
+    function calculatePhases() {
+      const phases = [];
+      const fullCycles = Math.floor(TOTAL_DURATION_SEC / CYCLE_DURATION_SEC);
+      const remainder = TOTAL_DURATION_SEC - (fullCycles * CYCLE_DURATION_SEC);
+
+      // Add full cycles
+      for (let i = 0; i < fullCycles; i++) {
+        phases.push({ type: 'work', duration: WORK_DURATION_SEC });
+        phases.push({ type: 'rest', duration: REST_DURATION_SEC });
+      }
+
+      // Add remainder as work phase
+      if (remainder > 0) {
+        phases.push({ type: 'work', duration: remainder });
+      }
+
+      return phases;
+    }
+
+    const PHASES = calculatePhases();
+
+    // ============================================================================
+    // STATE MANAGEMENT
+    // ============================================================================
+    const State = {
+      IDLE: 'idle',
+      RUNNING: 'running',
+      PAUSED: 'paused',
+      FINISHED: 'finished'
+    };
+
+    let currentState = State.IDLE;
+    let phaseIndex = 0;
+    let phaseStartTime = null;
+    let sessionStartTime = null;
+    let pausedElapsed = 0;
+    let totalElapsed = 0;
+    let animationFrameId = null;
+    let lastBeepMinute = -1;
+
+    // ============================================================================
+    // AUDIO SETUP (Web Audio API)
+    // ============================================================================
+    let audioContext = null;
+    let isMuted = false;
+
+    function initAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
+
+    function playTone(frequency, durationMs, type = 'sine', gainValue = 0.3) {
+      if (isMuted || !audioContext) return;
+
+      const osc = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      osc.type = type;
+      osc.frequency.value = frequency;
+
+      const now = audioContext.currentTime;
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(gainValue, now + 0.005);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + durationMs / 1000);
+
+      osc.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      osc.start(now);
+      osc.stop(now + durationMs / 1000);
+    }
+
+    function playMinuteBeep() {
+      playTone(880, 80, 'sine', 0.2);
+    }
+
+    function playWorkStartBeep() {
+      // Complex tone for work start
+      playTone(440, 180, 'triangle', 0.25);
+      setTimeout(() => playTone(660, 180, 'triangle', 0.25), 50);
+    }
+
+    // ============================================================================
+    // DOM ELEMENTS
+    // ============================================================================
+    const timerDisplay = document.getElementById('timer-display');
+    const phaseLabel = document.getElementById('phase-label');
+    const progressFill = document.getElementById('progress-fill');
+    const progressBar = document.getElementById('progress-bar');
+    const cycleInfo = document.getElementById('cycle-info');
+    const sessionInfo = document.getElementById('session-info');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const muteCheckbox = document.getElementById('muteCheckbox');
+    const statusText = document.getElementById('statusText');
+
+    // ============================================================================
+    // UI UPDATE FUNCTIONS
+    // ============================================================================
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateDisplay(phaseRemaining, totalRemaining) {
+      timerDisplay.textContent = formatTime(phaseRemaining);
+      
+      const currentPhase = PHASES[phaseIndex];
+      const phaseProgress = ((currentPhase.duration - phaseRemaining) / currentPhase.duration) * 100;
+      progressFill.style.width = `${Math.min(100, Math.max(0, phaseProgress))}%`;
+      progressBar.setAttribute('aria-valuenow', Math.round(phaseProgress));
+
+      const currentCycle = Math.floor(phaseIndex / 2) + (phaseIndex % 2 === 0 ? 1 : 1);
+      const totalCycles = Math.ceil(PHASES.length / 2);
+      cycleInfo.textContent = `Cycle: ${Math.min(currentCycle, totalCycles)} / ${totalCycles}`;
+      
+      sessionInfo.textContent = `Session: ${formatTime(totalElapsed)} / ${formatTime(TOTAL_DURATION_SEC)}`;
+    }
+
+    function updatePhaseLabel() {
+      const phase = PHASES[phaseIndex];
+      phaseLabel.textContent = phase.type.toUpperCase();
+      phaseLabel.className = phase.type;
+    }
+
+    function updateButtonStates() {
+      switch (currentState) {
+        case State.IDLE:
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          resetBtn.disabled = false;
+          startBtn.textContent = 'START';
+          break;
+        case State.RUNNING:
+          startBtn.disabled = true;
+          pauseBtn.disabled = false;
+          resetBtn.disabled = false;
+          break;
+        case State.PAUSED:
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          resetBtn.disabled = false;
+          startBtn.textContent = 'RESUME';
+          break;
+        case State.FINISHED:
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          resetBtn.disabled = false;
+          startBtn.textContent = 'RESTART';
+          break;
+      }
+    }
+
+    // ============================================================================
+    // TIMER LOGIC
+    // ============================================================================
+    function nextPhase() {
+      phaseIndex++;
+      
+      if (phaseIndex >= PHASES.length) {
+        finishSession();
+        return;
+      }
+
+      phaseStartTime = performance.now();
+      pausedElapsed = 0;
+      lastBeepMinute = -1;
+      updatePhaseLabel();
+
+      // Play appropriate beep for new phase
+      const phase = PHASES[phaseIndex];
+      if (phase.type === 'work' && phase.duration >= WORK_DURATION_SEC) {
+        playWorkStartBeep();
+      } else {
+        playMinuteBeep();
+      }
+    }
+
+    function tick() {
+      if (currentState !== State.RUNNING) {
+        return;
+      }
+
+      const now = performance.now();
+      const phaseElapsed = (now - phaseStartTime) / 1000;
+      const currentPhase = PHASES[phaseIndex];
+      const phaseRemaining = Math.max(0, currentPhase.duration - phaseElapsed);
+      
+      totalElapsed = Math.min(TOTAL_DURATION_SEC, 
+        PHASES.slice(0, phaseIndex).reduce((sum, p) => sum + p.duration, 0) + phaseElapsed);
+      
+      const totalRemaining = Math.max(0, TOTAL_DURATION_SEC - totalElapsed);
+
+      updateDisplay(phaseRemaining, totalRemaining);
+
+      // Check for minute beeps
+      const currentMinute = Math.floor(phaseRemaining / 60);
+      if (currentMinute !== lastBeepMinute && phaseRemaining % 60 < 1 && phaseRemaining > 1) {
+        lastBeepMinute = currentMinute;
+        playMinuteBeep();
+      }
+
+      // Check if phase is complete
+      if (phaseElapsed >= currentPhase.duration - 0.05) {
+        nextPhase();
+      }
+
+      animationFrameId = requestAnimationFrame(tick);
+    }
+
+    function start() {
+      initAudioContext();
+      
+      if (currentState === State.IDLE || currentState === State.FINISHED) {
+        phaseIndex = 0;
+        sessionStartTime = performance.now();
+        phaseStartTime = performance.now();
+        pausedElapsed = 0;
+        totalElapsed = 0;
+        lastBeepMinute = -1;
+        updatePhaseLabel();
+        
+        // Play start beep
+        const phase = PHASES[phaseIndex];
+        if (phase.type === 'work') {
+          playWorkStartBeep();
+        }
+      } else if (currentState === State.PAUSED) {
+        phaseStartTime = performance.now() - (pausedElapsed * 1000);
+      }
+
+      currentState = State.RUNNING;
+      updateButtonStates();
+      statusText.textContent = 'Running... | SPACE to pause | R to reset';
+      animationFrameId = requestAnimationFrame(tick);
+    }
+
+    function pause() {
+      if (currentState !== State.RUNNING) return;
+
+      const now = performance.now();
+      pausedElapsed = (now - phaseStartTime) / 1000;
+      
+      currentState = State.PAUSED;
+      updateButtonStates();
+      statusText.textContent = 'Paused | SPACE to resume | R to reset';
+      
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+
+    function reset() {
+      currentState = State.IDLE;
+      phaseIndex = 0;
+      phaseStartTime = null;
+      sessionStartTime = null;
+      pausedElapsed = 0;
+      totalElapsed = 0;
+      lastBeepMinute = -1;
+
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      updateDisplay(TOTAL_DURATION_SEC, TOTAL_DURATION_SEC);
+      phaseLabel.textContent = 'READY';
+      phaseLabel.className = 'work';
+      progressFill.style.width = '0%';
+      cycleInfo.textContent = 'Cycle: 0 / 7';
+      sessionInfo.textContent = `Session: 00:00 / 30:00`;
+      
+      updateButtonStates();
+      statusText.textContent = 'Press SPACE to start | R to reset | M to mute';
+    }
+
+    function finishSession() {
+      currentState = State.FINISHED;
+      
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      phaseLabel.textContent = 'COMPLETE!';
+      timerDisplay.textContent = '00:00';
+      progressFill.style.width = '100%';
+      
+      updateButtonStates();
+      statusText.textContent = 'Session complete! Press START to restart';
+      
+      // Victory beep sequence
+      setTimeout(() => playTone(523, 150, 'sine', 0.3), 0);
+      setTimeout(() => playTone(659, 150, 'sine', 0.3), 200);
+      setTimeout(() => playTone(784, 300, 'sine', 0.3), 400);
+    }
+
+    // ============================================================================
+    // EVENT LISTENERS
+    // ============================================================================
+    startBtn.addEventListener('click', start);
+    pauseBtn.addEventListener('click', pause);
+    resetBtn.addEventListener('click', reset);
+    
+    muteCheckbox.addEventListener('change', (e) => {
+      isMuted = e.target.checked;
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      
+      switch(e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault();
+          if (currentState === State.RUNNING) {
+            pause();
+          } else {
+            start();
+          }
+          break;
+        case 'r':
+          e.preventDefault();
+          reset();
+          break;
+        case 'm':
+          e.preventDefault();
+          muteCheckbox.checked = !muteCheckbox.checked;
+          isMuted = muteCheckbox.checked;
+          break;
+      }
+    });
+
+    // Handle page visibility
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && currentState === State.RUNNING) {
+        // Timer continues to run based on performance.now()
+        // No action needed, time will be accurate on return
+      } else if (!document.hidden && currentState === State.RUNNING) {
+        // Resume RAF loop
+        if (!animationFrameId) {
+          animationFrameId = requestAnimationFrame(tick);
+        }
+      }
+    });
+
+    // ============================================================================
+    // INITIALIZATION
+    // ============================================================================
+    updateDisplay(TOTAL_DURATION_SEC, TOTAL_DURATION_SEC);
+    updateButtonStates();
+  </script>
+</body>
+</html>

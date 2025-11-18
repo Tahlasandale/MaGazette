@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Feedback Quotidien Cyberpunk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(120deg, #18181a 60%, #270043 100%);
+      color: #f3f3f3;
+      font-family: "Orbitron", "Arial", sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    h1 {
+      color: #00fff7;
+      text-shadow: 0 0 12px #ff4ecd, 0 0 22px #00fff7;
+      margin: 1rem 0;
+      font-size: clamp(1.4rem, 5vw, 2.4rem);
+      letter-spacing: 2px;
+      text-align: center;
+      width: 100%;
+    }
+    
+    .panel {
+      background: rgba(34, 39, 53, 0.98);
+      border: 2px solid #00fff7;
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 100%;
+      box-shadow: 0 0 20px #00fff788, 0 0 8px #ff4ecd44;
+    }
+    
+    .links {
+      margin-bottom: 1.1rem;
+      text-align: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+    
+    .links a {
+      color: #ff4ecd;
+      text-decoration: none;
+      font-weight: bold;
+      letter-spacing: 1px;
+      font-size: clamp(0.8rem, 3vw, 1rem);
+      text-shadow: 0 0 6px #ff4ecd;
+      transition: color 0.18s, text-shadow 0.18s;
+      word-break: break-word;
+    }
+    
+    .links a:hover {
+      color: #00fff7;
+      text-shadow: 0 0 8px #00fff7;
+    }
+    
+    label {
+      display: block;
+      margin: 1rem 0 0.25rem 0;
+      color: #ff4ecd;
+      font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+      word-break: break-word;
+    }
+    
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      border-radius: 8px;
+      background: #18181a;
+      color: #fff;
+      border: 1.5px solid #00fff7;
+      padding: 0.6rem;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      margin-bottom: 0.8rem;
+      box-sizing: border-box;
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    textarea {
+      font-family: "Orbitron", "Arial", sans-serif;
+    }
+    
+    button {
+      background: #ff277b;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: clamp(0.95rem, 3vw, 1.1rem);
+      padding: 0.7rem 1rem;
+      margin: 0.7rem 0;
+      cursor: pointer;
+      box-shadow: 0 0 12px #ff277b, 0 0 8px #00fff7;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+      font-family: "Orbitron", monospace;
+      word-break: break-word;
+    }
+    
+    button:hover {
+      background: #00fff7;
+      color: #111;
+    }
+    
+    .feedbacks {
+      margin-top: 1.1rem;
+      background: rgba(12, 19, 30, 0.72);
+      border-radius: 12px;
+      border: 1px solid #ff4ecd66;
+      padding: 1rem;
+      max-height: 50vh;
+      overflow-y: auto;
+      width: 100%;
+    }
+    
+    .entry {
+      margin-bottom: 1rem;
+      border-left: 2.5px solid #00fff7;
+      padding-left: 0.8rem;
+      background: rgba(20, 16, 36, 0.46);
+      border-radius: 6px;
+      box-shadow: 0 0 8px #ff4ecd22;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+      position: relative;
+    }
+    
+    .entry img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      border: 1px solid #00fff7;
+      margin-top: 5px;
+      box-shadow: 0 0 6px #00fff7bb;
+      display: block;
+    }
+    
+    .datetime {
+      color: #ff4ecd;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
+      margin-bottom: 4px;
+      word-break: break-word;
+    }
+
+    .entry-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: none;
+      gap: 8px;
+    }
+
+    .entry:hover .entry-actions {
+      display: flex;
+    }
+
+    .entry-action {
+      background: rgba(255, 120, 125, 0.9);
+      border: none;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+
+    .entry-action:hover {
+      background: rgba(255, 120, 125, 1);
+    }
+
+    .entry-action.edit {
+      background: rgba(0, 255, 247, 0.9);
+    }
+
+    .entry-action.edit:hover {
+      background: rgba(0, 255, 247, 1);
+    }
+    
+    .seeall, .hideall {
+      display: block;
+      margin: 1.1rem auto 0;
+      background: #111;
+      border: 2px solid #00fff7;
+      color: #00fff7;
+      border-radius: 12px;
+      padding: 0.5rem 1.4rem;
+      box-shadow: 0 0 8px #00fff7;
+      font-family: "Orbitron", monospace;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      width: auto;
+      min-width: 120px;
+    }
+    
+    .seeall:hover, .hideall:hover {
+      background: #00fff7;
+      color: #18181a;
+    }
+    
+    ::selection {
+      background: #ff4ecd;
+      color: #fff;
+    }
+    
+    /* Scrollbar styling pour webkit browsers */
+    .feedbacks::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .feedbacks::-webkit-scrollbar-track {
+      background: rgba(255, 78, 205, 0.1);
+      border-radius: 4px;
+    }
+    
+    .feedbacks::-webkit-scrollbar-thumb {
+      background: #ff4ecd;
+      border-radius: 4px;
+    }
+    
+    .feedbacks::-webkit-scrollbar-thumb:hover {
+      background: #00fff7;
+    }
+    
+    /* Media queries pour une meilleure adaptation */
+    @media (min-width: 769px) {
+      body {
+        padding: 20px;
+      }
+      
+      .panel {
+        padding: 3rem;
+        max-width: 95%;
+        margin: 2rem auto;
+      }
+      
+      .feedbacks {
+        max-height: 60vh;
+        padding: 2rem;
+      }
+      
+      textarea {
+        min-height: 120px;
+      }
+      
+      .links {
+        margin-bottom: 2rem;
+      }
+    }
+    
+    @media (max-width: 768px) and (min-width: 481px) {
+      .panel {
+        max-width: 90%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 5px;
+      }
+
+      .panel {
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 0.5rem;
+        max-width: 420px;
+      }
+
+      h1 {
+        margin: 0.5rem 0;
+        letter-spacing: 1px;
+      }
+
+      .links {
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+      }
+
+      textarea,
+      input[type="file"] {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      button {
+        padding: 0.6rem 0.8rem;
+        margin: 0.5rem 0;
+      }
+
+      .feedbacks {
+        padding: 0.8rem;
+        max-height: 40vh;
+      }
+
+      .entry {
+        padding-left: 0.6rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .entry-actions {
+        top: 4px;
+        right: 4px;
+        gap: 4px;
+      }
+
+      .entry-action {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+      }
+
+      .seeall {
+        padding: 0.4rem 1rem;
+        margin: 0.8rem auto 0;
+      }
+    }
+    
+    @media (max-width: 320px) {
+      body {
+        padding: 2px;
+      }
+      
+      .panel {
+        padding: 0.8rem;
+        border-radius: 8px;
+      }
+      
+      .links a {
+        font-size: 0.8rem;
+      }
+      
+      textarea {
+        min-height: 60px;
+      }
+      
+      .feedbacks {
+        max-height: 35vh;
+      }
+    }
+    
+    /* Assure que les éléments longs ne dépassent jamais */
+    * {
+      max-width: 100%;
+      overflow-wrap: break-word;
+    }
+  </style>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Clé temporaire pour test - À REMPLACER par une vraie clé avec permissions
+    const SUPABASE_URL = "https://xcawojxvtxdcnwkhywmn.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI";
+    const IMGBB_API_KEY = "78e05cd74f26e3e31a04ba7366739c98";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let feedbacks = [], showingAll = false, editingIndex = -1;
+
+    function isImageUrl(content) {
+      return typeof content === "string" && content.match(/^https?:\/\/.+\.(jpg|jpeg|png|webp)$/i);
+    }
+
+    async function loadFeedbacks(limit = 3) {
+      let query = supabase
+        .from("Feedback")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (!showingAll) query = query.limit(limit);
+      const { data, error } = await query;
+      if (error) {
+        console.error("Erreur chargement feedback:", error);
+        alert("Erreur chargement feedback : " + error.message);
+        return;
+      }
+      feedbacks = data || [];
+      render();
+      document.getElementById("seeall").style.display =
+        showingAll ? "none" : (feedbacks.length === limit ? "block" : "none");
+      document.getElementById("hideall").style.display =
+        showingAll ? "block" : "none";
+    }
+
+    function render() {
+      const box = document.getElementById("feedbacks");
+      if (!feedbacks.length) {
+        box.innerHTML = "<div style='color:#ff4ecd;'>Aucun feedback enregistré.</div>";
+        return;
+      }
+      box.innerHTML = feedbacks
+        .map(
+          (fb, index) => `
+        <div class="entry" data-index="${index}">
+          <div class="entry-actions">
+            <button class="entry-action edit" onclick="editFeedback(${index})" title="Éditer">✏️</button>
+            <button class="entry-action delete" onclick="deleteFeedback(${index})" title="Supprimer">❌</button>
+          </div>
+          <div class="datetime">${new Date(fb.created_at).toLocaleString()}</div>
+          ${
+            isImageUrl(fb.content)
+              ? `<img src="${fb.content}" alt="Feedback manuscrit" loading="lazy">`
+              : `<div>${fb.content.replace(/\n/g, "<br>")}</div>`
+          }
+        </div>
+      `
+        )
+        .join("");
+    }
+
+    window.editFeedback = async function(index) {
+      const feedback = feedbacks[index];
+      editingIndex = index;
+
+      // Pré-remplir le formulaire avec le contenu actuel
+      if (isImageUrl(feedback.content)) {
+        alert("L'édition d'images n'est pas encore supportée. Vous pouvez supprimer et recréer le feedback.");
+        editingIndex = -1;
+        return;
+      }
+
+      document.getElementById("content").value = feedback.content.replace(/<br>/g, "\n");
+      document.getElementById("content").focus();
+
+      // Changer le texte du bouton
+      const submitBtn = document.querySelector("#form button[type='submit']");
+      submitBtn.textContent = "💾 Mettre à jour";
+
+      // Annuler l'édition si on clique ailleurs
+      document.addEventListener("click", cancelEditOnClickOutside);
+    }
+
+    function cancelEditOnClickOutside(e) {
+      if (!e.target.closest("#form") && !e.target.closest(".entry")) {
+        cancelEdit();
+      }
+    }
+
+    function cancelEdit() {
+      editingIndex = -1;
+      document.getElementById("content").value = "";
+      document.getElementById("img").value = "";
+      const submitBtn = document.querySelector("#form button[type='submit']");
+      submitBtn.textContent = "💾 Sauvegarder feedback";
+      document.removeEventListener("click", cancelEditOnClickOutside);
+    }
+
+    window.deleteFeedback = async function(index) {
+      if (!confirm("Êtes-vous sûr de vouloir supprimer ce feedback ?")) {
+        return;
+      }
+
+      const feedback = feedbacks[index];
+
+      // Compter les enregistrements avant suppression
+      const { count: countBefore } = await supabase
+        .from("Feedback")
+        .select("*", { count: "exact", head: true });
+
+      try {
+        // Approche alternative : supprimer en utilisant une requête plus spécifique
+        let deleteQuery = supabase.from("Feedback").delete();
+
+        if (feedback.id !== undefined && feedback.id !== null) {
+          deleteQuery = deleteQuery.eq("id", feedback.id);
+        } else {
+          // Convertir created_at en format ISO pour une meilleure précision
+          const createdAtISO = new Date(feedback.created_at).toISOString();
+          deleteQuery = deleteQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
+        }
+
+        const { error } = await deleteQuery;
+
+        if (error) {
+          throw error;
+        }
+
+        // Compter les enregistrements après suppression
+        const { count: countAfter } = await supabase
+          .from("Feedback")
+          .select("*", { count: "exact", head: true });
+
+        if (countBefore === countAfter) {
+          alert("❌ Erreur : La suppression n'a pas fonctionné. Vérifiez les permissions Supabase (RLS) pour la table 'Feedback'.");
+          console.error("Suppression échouée : nombre d'enregistrements inchangé");
+          return;
+        }
+
+        // Recharger les feedbacks
+        loadFeedbacks();
+      } catch (error) {
+        console.error("Erreur suppression feedback:", error);
+        alert("Erreur suppression feedback: " + error.message);
+      }
+    }
+
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function uploadImageToImgBB(file) {
+      const base64Image = await toBase64(file);
+      const formData = new FormData();
+      formData.append("image", base64Image);
+
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur upload ImgBB");
+      }
+
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error("Erreur upload ImgBB");
+      }
+
+      return data.data.url;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("form").onsubmit = async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("content").value.trim();
+        const imageInput = document.getElementById("img").files[0];
+        let content = text;
+
+        if (imageInput) {
+          try {
+            content = await uploadImageToImgBB(imageInput);
+          } catch (err) {
+            alert("Erreur upload image : " + err.message);
+            return;
+          }
+        } else if (!text) {
+          alert("Ajoute un texte ou choisis une image !");
+          return;
+        }
+
+        if (editingIndex >= 0) {
+          // Mode édition
+          const feedback = feedbacks[editingIndex];
+
+          // Vérifier le contenu avant mise à jour
+          const { data: beforeData } = await supabase
+            .from("Feedback")
+            .select("content")
+            .eq("id", feedback.id);
+
+          try {
+            let updateQuery = supabase.from("Feedback").update({ content });
+
+            if (feedback.id !== undefined && feedback.id !== null) {
+              updateQuery = updateQuery.eq("id", feedback.id);
+            } else {
+              // Convertir created_at en format ISO pour une meilleure précision
+              const createdAtISO = new Date(feedback.created_at).toISOString();
+              updateQuery = updateQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
+            }
+
+            const { error } = await updateQuery;
+
+            if (error) {
+              throw error;
+            }
+
+            // Vérifier que la mise à jour a bien eu lieu
+            const { data: checkData, error: checkError } = await supabase
+              .from("Feedback")
+              .select("content")
+              .eq("id", feedback.id);
+
+
+
+            if (checkData && checkData[0] && checkData[0].content !== content) {
+              alert("❌ Erreur : La mise à jour n'a pas fonctionné. Vérifiez les permissions Supabase (RLS) pour la table 'Feedback'.");
+              console.error("Mise à jour échouée : contenu inchangé");
+              return;
+            }
+          } catch (error) {
+            console.error("Erreur mise à jour feedback :", error);
+            alert("Erreur mise à jour feedback : " + error.message);
+            return;
+          }
+        } else {
+          // Mode ajout
+          const { error } = await supabase.from("Feedback").insert([{ content }]);
+          if (error) {
+            console.error("Erreur ajout feedback :", error);
+            alert("Erreur ajout feedback : " + error.message);
+            return;
+          }
+        }
+
+        document.getElementById("form").reset();
+        cancelEdit();
+        showingAll = false;
+        loadFeedbacks();
+      };
+      document.getElementById("seeall").onclick = () => {
+        showingAll = true;
+        loadFeedbacks();
+      };
+      document.getElementById("hideall").onclick = () => {
+        showingAll = false;
+        loadFeedbacks();
+      };
+      loadFeedbacks();
+    });
+  </script>
+</head>
+<body>
+  <h1>📊 Feedback du Soir</h1>
+    <div class="panel">
+      <div class="links">
+        <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">📝 SimpleTabHTML</a>
+        <a href="https://chatgpt.com" target="_blank">🎤 ChatGPT</a>
+      </div>
+
+      <div style="background: rgba(255, 120, 125, 0.1); border: 1px solid #ff4ecd; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-size: 0.9rem; color: #ff4ecd;">
+        <strong>⚠️ Note importante :</strong> Si l'édition et la suppression de feedbacks ne fonctionnent pas, vérifiez les permissions Supabase.<br>
+        Dans votre dashboard Supabase → Table "Feedback" → Assurez-vous que RLS permet UPDATE et DELETE pour votre clé API.
+      </div>
+    <form id="form" autocomplete="off">
+      <label for="content">Ton feedback (texte) :</label>
+      <textarea id="content" rows="3" placeholder="Comment s'est passée ta journée ?"></textarea>
+      <label for="img">Ou upload une image :</label>
+      <input type="file" id="img" accept="image/png, image/jpeg, image/webp" />
+      <button type="submit">💾 Sauvegarder feedback</button>
+    </form>
+    <div class="feedbacks" id="feedbacks"></div>
+    <button class="seeall" id="seeall" style="display: none">Voir tout</button>
+    <button class="hideall" id="hideall" style="display: none">Masquer</button>
+  </div>
+</body>
+</html>
