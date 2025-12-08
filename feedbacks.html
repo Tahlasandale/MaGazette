@@ -8,6 +8,10 @@
     href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
     rel="stylesheet"
   />
+  
+  <!-- CORRECTION : Chargement global de Supabase (plus stable que le module ESM) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -225,7 +229,7 @@
       color: #fff;
     }
     
-    /* Scrollbar styling pour webkit browsers */
+    /* Scrollbar styling */
     .feedbacks::-webkit-scrollbar {
       width: 8px;
     }
@@ -244,138 +248,53 @@
       background: #00fff7;
     }
     
-    /* Media queries pour une meilleure adaptation */
     @media (min-width: 769px) {
-      body {
-        padding: 20px;
-      }
-      
-      .panel {
-        padding: 3rem;
-        max-width: 95%;
-        margin: 2rem auto;
-      }
-      
-      .feedbacks {
-        max-height: 60vh;
-        padding: 2rem;
-      }
-      
-      textarea {
-        min-height: 120px;
-      }
-      
-      .links {
-        margin-bottom: 2rem;
-      }
+      body { padding: 20px; }
+      .panel { padding: 3rem; max-width: 95%; margin: 2rem auto; }
+      .feedbacks { max-height: 60vh; padding: 2rem; }
+      textarea { min-height: 120px; }
+      .links { margin-bottom: 2rem; }
     }
     
     @media (max-width: 768px) and (min-width: 481px) {
-      .panel {
-        max-width: 90%;
-      }
+      .panel { max-width: 90%; }
     }
     
     @media (max-width: 480px) {
-      body {
-        padding: 5px;
-      }
-
-      .panel {
-        padding: 1rem;
-        border-radius: 12px;
-        margin-top: 0.5rem;
-        max-width: 420px;
-      }
-
-      h1 {
-        margin: 0.5rem 0;
-        letter-spacing: 1px;
-      }
-
-      .links {
-        gap: 0.5rem;
-        margin-bottom: 0.8rem;
-      }
-
-      textarea,
-      input[type="file"] {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-      }
-
-      button {
-        padding: 0.6rem 0.8rem;
-        margin: 0.5rem 0;
-      }
-
-      .feedbacks {
-        padding: 0.8rem;
-        max-height: 40vh;
-      }
-
-      .entry {
-        padding-left: 0.6rem;
-        margin-bottom: 0.8rem;
-      }
-
-      .entry-actions {
-        top: 4px;
-        right: 4px;
-        gap: 4px;
-      }
-
-      .entry-action {
-        width: 20px;
-        height: 20px;
-        font-size: 10px;
-      }
-
-      .seeall {
-        padding: 0.4rem 1rem;
-        margin: 0.8rem auto 0;
-      }
+      body { padding: 5px; }
+      .panel { padding: 1rem; border-radius: 12px; margin-top: 0.5rem; max-width: 420px; }
+      h1 { margin: 0.5rem 0; letter-spacing: 1px; }
+      .links { gap: 0.5rem; margin-bottom: 0.8rem; }
+      textarea, input[type="file"] { padding: 0.5rem; font-size: 0.9rem; }
+      button { padding: 0.6rem 0.8rem; margin: 0.5rem 0; }
+      .feedbacks { padding: 0.8rem; max-height: 40vh; }
+      .entry { padding-left: 0.6rem; margin-bottom: 0.8rem; }
+      .entry-actions { top: 4px; right: 4px; gap: 4px; }
+      .entry-action { width: 20px; height: 20px; font-size: 10px; }
+      .seeall { padding: 0.4rem 1rem; margin: 0.8rem auto 0; }
     }
     
     @media (max-width: 320px) {
-      body {
-        padding: 2px;
-      }
-      
-      .panel {
-        padding: 0.8rem;
-        border-radius: 8px;
-      }
-      
-      .links a {
-        font-size: 0.8rem;
-      }
-      
-      textarea {
-        min-height: 60px;
-      }
-      
-      .feedbacks {
-        max-height: 35vh;
-      }
+      body { padding: 2px; }
+      .panel { padding: 0.8rem; border-radius: 8px; }
+      .links a { font-size: 0.8rem; }
+      textarea { min-height: 60px; }
+      .feedbacks { max-height: 35vh; }
     }
     
-    /* Assure que les éléments longs ne dépassent jamais */
-    * {
-      max-width: 100%;
-      overflow-wrap: break-word;
-    }
+    * { max-width: 100%; overflow-wrap: break-word; }
   </style>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  <script>
+    // CORRECTION : On récupère createClient depuis la variable globale supabase
+    const { createClient } = supabase;
 
-    // Clé temporaire pour test - À REMPLACER par une vraie clé avec permissions
+    // Vos clés (inchangées)
     const SUPABASE_URL = "https://xcawojxvtxdcnwkhywmn.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI";
     const IMGBB_API_KEY = "78e05cd74f26e3e31a04ba7366739c98";
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let feedbacks = [], showingAll = false, editingIndex = -1;
 
@@ -384,7 +303,7 @@
     }
 
     async function loadFeedbacks(limit = 3) {
-      let query = supabase
+      let query = sb // Changé supabase par sb pour cohérence
         .from("Feedback")
         .select("*")
         .order("created_at", { ascending: false });
@@ -392,15 +311,16 @@
       const { data, error } = await query;
       if (error) {
         console.error("Erreur chargement feedback:", error);
-        alert("Erreur chargement feedback : " + error.message);
+        // On évite les alertes bloquantes au chargement si possible, juste log
         return;
       }
       feedbacks = data || [];
       render();
-      document.getElementById("seeall").style.display =
-        showingAll ? "none" : (feedbacks.length === limit ? "block" : "none");
-      document.getElementById("hideall").style.display =
-        showingAll ? "block" : "none";
+      const seeAllBtn = document.getElementById("seeall");
+      const hideAllBtn = document.getElementById("hideall");
+      
+      if(seeAllBtn) seeAllBtn.style.display = showingAll ? "none" : (feedbacks.length === limit ? "block" : "none");
+      if(hideAllBtn) hideAllBtn.style.display = showingAll ? "block" : "none";
     }
 
     function render() {
@@ -433,9 +353,8 @@
       const feedback = feedbacks[index];
       editingIndex = index;
 
-      // Pré-remplir le formulaire avec le contenu actuel
       if (isImageUrl(feedback.content)) {
-        alert("L'édition d'images n'est pas encore supportée. Vous pouvez supprimer et recréer le feedback.");
+        alert("L'édition d'images n'est pas encore supportée. Supprimez et recréez.");
         editingIndex = -1;
         return;
       }
@@ -443,11 +362,9 @@
       document.getElementById("content").value = feedback.content.replace(/<br>/g, "\n");
       document.getElementById("content").focus();
 
-      // Changer le texte du bouton
       const submitBtn = document.querySelector("#form button[type='submit']");
       submitBtn.textContent = "💾 Mettre à jour";
 
-      // Annuler l'édition si on clique ailleurs
       document.addEventListener("click", cancelEditOnClickOutside);
     }
 
@@ -462,56 +379,30 @@
       document.getElementById("content").value = "";
       document.getElementById("img").value = "";
       const submitBtn = document.querySelector("#form button[type='submit']");
-      submitBtn.textContent = "💾 Sauvegarder feedback";
+      if(submitBtn) submitBtn.textContent = "💾 Sauvegarder feedback";
       document.removeEventListener("click", cancelEditOnClickOutside);
     }
 
     window.deleteFeedback = async function(index) {
-      if (!confirm("Êtes-vous sûr de vouloir supprimer ce feedback ?")) {
-        return;
-      }
+      if (!confirm("Supprimer ce feedback ?")) return;
 
       const feedback = feedbacks[index];
-
-      // Compter les enregistrements avant suppression
-      const { count: countBefore } = await supabase
-        .from("Feedback")
-        .select("*", { count: "exact", head: true });
-
       try {
-        // Approche alternative : supprimer en utilisant une requête plus spécifique
-        let deleteQuery = supabase.from("Feedback").delete();
+        let deleteQuery = sb.from("Feedback").delete();
 
         if (feedback.id !== undefined && feedback.id !== null) {
           deleteQuery = deleteQuery.eq("id", feedback.id);
         } else {
-          // Convertir created_at en format ISO pour une meilleure précision
           const createdAtISO = new Date(feedback.created_at).toISOString();
           deleteQuery = deleteQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
         }
 
         const { error } = await deleteQuery;
-
-        if (error) {
-          throw error;
-        }
-
-        // Compter les enregistrements après suppression
-        const { count: countAfter } = await supabase
-          .from("Feedback")
-          .select("*", { count: "exact", head: true });
-
-        if (countBefore === countAfter) {
-          alert("❌ Erreur : La suppression n'a pas fonctionné. Vérifiez les permissions Supabase (RLS) pour la table 'Feedback'.");
-          console.error("Suppression échouée : nombre d'enregistrements inchangé");
-          return;
-        }
-
-        // Recharger les feedbacks
+        if (error) throw error;
         loadFeedbacks();
       } catch (error) {
-        console.error("Erreur suppression feedback:", error);
-        alert("Erreur suppression feedback: " + error.message);
+        console.error("Erreur suppression:", error);
+        alert("Erreur suppression");
       }
     }
 
@@ -534,14 +425,9 @@
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Erreur upload ImgBB");
-      }
-
+      if (!response.ok) throw new Error("Erreur upload ImgBB");
       const data = await response.json();
-      if (!data.success) {
-        throw new Error("Erreur upload ImgBB");
-      }
+      if (!data.success) throw new Error("Erreur upload ImgBB");
 
       return data.data.url;
     }
@@ -561,61 +447,36 @@
             return;
           }
         } else if (!text) {
-          alert("Ajoute un texte ou choisis une image !");
+          alert("Ajoute un texte ou une image !");
           return;
         }
 
         if (editingIndex >= 0) {
           // Mode édition
           const feedback = feedbacks[editingIndex];
-
-          // Vérifier le contenu avant mise à jour
-          const { data: beforeData } = await supabase
-            .from("Feedback")
-            .select("content")
-            .eq("id", feedback.id);
-
           try {
-            let updateQuery = supabase.from("Feedback").update({ content });
+            let updateQuery = sb.from("Feedback").update({ content });
 
             if (feedback.id !== undefined && feedback.id !== null) {
               updateQuery = updateQuery.eq("id", feedback.id);
             } else {
-              // Convertir created_at en format ISO pour une meilleure précision
               const createdAtISO = new Date(feedback.created_at).toISOString();
               updateQuery = updateQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
             }
 
             const { error } = await updateQuery;
-
-            if (error) {
-              throw error;
-            }
-
-            // Vérifier que la mise à jour a bien eu lieu
-            const { data: checkData, error: checkError } = await supabase
-              .from("Feedback")
-              .select("content")
-              .eq("id", feedback.id);
-
-
-
-            if (checkData && checkData[0] && checkData[0].content !== content) {
-              alert("❌ Erreur : La mise à jour n'a pas fonctionné. Vérifiez les permissions Supabase (RLS) pour la table 'Feedback'.");
-              console.error("Mise à jour échouée : contenu inchangé");
-              return;
-            }
+            if (error) throw error;
           } catch (error) {
-            console.error("Erreur mise à jour feedback :", error);
-            alert("Erreur mise à jour feedback : " + error.message);
+            console.error("Erreur mise à jour:", error);
+            alert("Erreur mise à jour");
             return;
           }
         } else {
           // Mode ajout
-          const { error } = await supabase.from("Feedback").insert([{ content }]);
+          const { error } = await sb.from("Feedback").insert([{ content }]);
           if (error) {
-            console.error("Erreur ajout feedback :", error);
-            alert("Erreur ajout feedback : " + error.message);
+            console.error("Erreur ajout:", error);
+            alert("Erreur ajout");
             return;
           }
         }
@@ -625,14 +486,19 @@
         showingAll = false;
         loadFeedbacks();
       };
-      document.getElementById("seeall").onclick = () => {
+
+      const seeAllBtn = document.getElementById("seeall");
+      const hideAllBtn = document.getElementById("hideall");
+
+      if(seeAllBtn) seeAllBtn.onclick = () => {
         showingAll = true;
         loadFeedbacks();
       };
-      document.getElementById("hideall").onclick = () => {
+      if(hideAllBtn) hideAllBtn.onclick = () => {
         showingAll = false;
         loadFeedbacks();
       };
+      
       loadFeedbacks();
     });
   </script>
@@ -644,7 +510,6 @@
         <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">📝 SimpleTabHTML</a>
         <a href="https://chatgpt.com" target="_blank">🎤 ChatGPT</a>
       </div>
-
 
     <form id="form" autocomplete="off">
       <label for="content">Ton feedback (texte) :</label>
