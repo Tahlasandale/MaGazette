@@ -219,6 +219,7 @@
     }
 
     async function loadFeedbacks(limit = 3) {
+      // CORRECTION : On cible la table principale 'Feedback' (Majuscule Singulier) pour l'affichage
       let query = sb
         .from("Feedback")
         .select("*")
@@ -270,8 +271,6 @@
         .join("");
     }
 
-    // --- Logique identique à la version précédente ---
-
     window.editFeedback = async function(index) {
       const feedback = feedbacks[index];
       editingIndex = index;
@@ -311,6 +310,7 @@
 
       const feedback = feedbacks[index];
       try {
+        // CORRECTION : Suppression explicite dans la table 'Feedback'
         let deleteQuery = sb.from("Feedback").delete();
 
         if (feedback.id !== undefined && feedback.id !== null) {
@@ -325,7 +325,7 @@
         loadFeedbacks();
       } catch (error) {
         console.error("Erreur suppression:", error);
-        alert("Erreur lors de la suppression");
+        alert("Erreur lors de la suppression : " + error.message);
       }
     }
 
@@ -362,6 +362,7 @@
         const imageInput = document.getElementById("img").files[0];
         let content = text;
 
+        // Gestion de l'upload image
         if (imageInput) {
           try {
             content = await uploadImageToImgBB(imageInput);
@@ -375,7 +376,7 @@
         }
 
         if (editingIndex >= 0) {
-          // Mode édition
+          // Mode édition : Update sur 'Feedback'
           const feedback = feedbacks[editingIndex];
           try {
             let updateQuery = sb.from("Feedback").update({ content });
@@ -396,10 +397,21 @@
           }
         } else {
           // Mode ajout
-          const { error } = await sb.from("Feedback").insert([{ content }]);
+          let error;
+          
+          if (imageInput) {
+            // IMAGE -> Table 'Feedback'
+            const res = await sb.from("Feedback").insert([{ content }]); 
+            error = res.error;
+          } else {
+            // TEXTE -> Table 'text' (Spécifique, mais attention : ils ne seront pas visibles si on ne charge que 'Feedback')
+            const res = await sb.from("text").insert([{ content }]);
+            error = res.error;
+          }
+
           if (error) {
             console.error("Erreur ajout:", error);
-            alert("Erreur ajout");
+            alert("Erreur ajout: " + error.message);
             return;
           }
         }
