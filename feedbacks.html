@@ -309,18 +309,22 @@
       if (!confirm("Supprimer ce feedback ?")) return;
 
       const feedback = feedbacks[index];
+      console.log('Delete attempt:', { index, feedback });
       try {
         // CORRECTION : Suppression explicite dans la table 'Feedback'
         let deleteQuery = sb.from("Feedback").delete();
 
         if (feedback.id !== undefined && feedback.id !== null) {
+          console.log('Deleting by id:', feedback.id);
           deleteQuery = deleteQuery.eq("id", feedback.id);
         } else {
           const createdAtISO = new Date(feedback.created_at).toISOString();
+          console.log('Deleting by created_at and content:', createdAtISO, feedback.content);
           deleteQuery = deleteQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
         }
 
         const { error } = await deleteQuery;
+        console.log('Delete result:', { error });
         if (error) throw error;
         loadFeedbacks();
       } catch (error) {
