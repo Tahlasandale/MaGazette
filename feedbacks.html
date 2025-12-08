@@ -2,174 +2,157 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Feedback Quotidien Cyberpunk</title>
+  <title>Feedback Minimaliste</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
-    rel="stylesheet"
-  />
   
-  <!-- CORRECTION : Chargement global de Supabase (plus stable que le module ESM) -->
+  <!-- Chargement global de Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    /* Reset & Base minimaliste */
+    * { box-sizing: border-box; }
     
     body {
-      background: linear-gradient(120deg, #18181a 60%, #270043 100%);
-      color: #f3f3f3;
-      font-family: "Orbitron", "Arial", sans-serif;
-      min-height: 100vh;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      padding: 10px;
+      padding: 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
     }
-    
-    h1 {
-      color: #00fff7;
-      text-shadow: 0 0 12px #ff4ecd, 0 0 22px #00fff7;
-      margin: 1rem 0;
-      font-size: clamp(1.4rem, 5vw, 2.4rem);
-      letter-spacing: 2px;
-      text-align: center;
-      width: 100%;
-    }
-    
+
+    /* Conteneur principal */
     .panel {
-      background: rgba(34, 39, 53, 0.98);
-      border: 2px solid #00fff7;
-      border-radius: 18px;
-      padding: 1.5rem;
-      margin-top: 1rem;
       width: 100%;
-      max-width: 100%;
-      box-shadow: 0 0 20px #00fff788, 0 0 8px #ff4ecd44;
+      max-width: 500px;
+      margin: 0 auto;
     }
-    
-    .links {
-      margin-bottom: 1.1rem;
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: normal;
+      margin-bottom: 0.5rem;
       text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    /* Liens discrets */
+    .links {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
+      gap: 1rem;
       justify-content: center;
+      margin-bottom: 2rem;
+      font-size: 0.85rem;
     }
-    
     .links a {
-      color: #ff4ecd;
+      color: #666;
       text-decoration: none;
-      font-weight: bold;
-      letter-spacing: 1px;
-      font-size: clamp(0.8rem, 3vw, 1rem);
-      text-shadow: 0 0 6px #ff4ecd;
-      transition: color 0.18s, text-shadow 0.18s;
-      word-break: break-word;
+      transition: color 0.2s;
     }
-    
     .links a:hover {
-      color: #00fff7;
-      text-shadow: 0 0 8px #00fff7;
+      color: #fff;
+      text-decoration: underline;
     }
-    
+
+    /* Formulaire épuré */
+    form {
+      margin-bottom: 2rem;
+    }
+
     label {
       display: block;
-      margin: 1rem 0 0.25rem 0;
-      color: #ff4ecd;
-      font-size: clamp(0.85rem, 2.5vw, 0.95rem);
-      word-break: break-word;
+      margin: 0 0 0.5rem 0;
+      color: #888;
+      font-size: 0.85rem;
     }
-    
-    textarea,
-    input[type="file"] {
+
+    textarea, input[type="file"] {
       width: 100%;
-      border-radius: 8px;
-      background: #18181a;
+      background: #000;
       color: #fff;
-      border: 1.5px solid #00fff7;
-      padding: 0.6rem;
-      font-size: clamp(0.9rem, 2.5vw, 1rem);
-      margin-bottom: 0.8rem;
-      box-sizing: border-box;
-      resize: vertical;
-      min-height: 80px;
+      border: 1px solid #333;
+      padding: 0.8rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
     }
-    
+
+    textarea:focus, input[type="file"]:focus {
+      outline: none;
+      border-color: #fff;
+    }
+
     textarea {
-      font-family: "Orbitron", "Arial", sans-serif;
+      min-height: 100px;
+      resize: vertical;
     }
-    
+
+    /* Input file style hack pour rester minimaliste */
+    input[type="file"] {
+      padding: 0.6rem;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
     button {
-      background: #ff277b;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: clamp(0.95rem, 3vw, 1.1rem);
-      padding: 0.7rem 1rem;
-      margin: 0.7rem 0;
+      background: #fff;
+      color: #000;
+      border: 1px solid #fff;
+      padding: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 0 12px #ff277b, 0 0 8px #00fff7;
-      transition: background 0.2s, color 0.2s;
       width: 100%;
-      font-family: "Orbitron", monospace;
-      word-break: break-word;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      transition: opacity 0.2s;
     }
     
     button:hover {
-      background: #00fff7;
-      color: #111;
-    }
-    
-    .feedbacks {
-      margin-top: 1.1rem;
-      background: rgba(12, 19, 30, 0.72);
-      border-radius: 12px;
-      border: 1px solid #ff4ecd66;
-      padding: 1rem;
-      max-height: 50vh;
-      overflow-y: auto;
-      width: 100%;
-    }
-    
-    .entry {
-      margin-bottom: 1rem;
-      border-left: 2.5px solid #00fff7;
-      padding-left: 0.8rem;
-      background: rgba(20, 16, 36, 0.46);
-      border-radius: 6px;
-      box-shadow: 0 0 8px #ff4ecd22;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      hyphens: auto;
-      position: relative;
-    }
-    
-    .entry img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-      border: 1px solid #00fff7;
-      margin-top: 5px;
-      box-shadow: 0 0 6px #00fff7bb;
-      display: block;
-    }
-    
-    .datetime {
-      color: #ff4ecd;
-      font-size: clamp(0.75rem, 2vw, 0.85rem);
-      margin-bottom: 4px;
-      word-break: break-word;
+      opacity: 0.9;
     }
 
+    /* Liste des feedbacks */
+    .feedbacks {
+      border-top: 1px solid #333;
+    }
+
+    .entry {
+      border-bottom: 1px solid #333;
+      padding: 1.5rem 0;
+      position: relative;
+    }
+
+    .datetime {
+      color: #444;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+      font-family: monospace;
+    }
+
+    .entry-content {
+      line-height: 1.5;
+      color: #ddd;
+    }
+
+    .entry img {
+      max-width: 100%;
+      border-radius: 4px;
+      border: 1px solid #333;
+      margin-top: 0.5rem;
+    }
+
+    /* Actions (Edit/Delete) - Apparaissent au survol comme sur la todo list */
     .entry-actions {
       position: absolute;
-      top: 8px;
-      right: 8px;
+      top: 1.5rem;
+      right: 0;
       display: none;
-      gap: 8px;
+      gap: 0.5rem;
     }
 
     .entry:hover .entry-actions {
@@ -177,119 +160,52 @@
     }
 
     .entry-action {
-      background: rgba(255, 120, 125, 0.9);
-      border: none;
+      background: #222;
+      color: #fff;
+      border: 1px solid #333;
+      width: 28px;
+      height: 28px;
       border-radius: 4px;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      transition: background 0.2s;
+      font-size: 0.8rem;
+      padding: 0;
     }
 
     .entry-action:hover {
-      background: rgba(255, 120, 125, 1);
+      background: #fff;
+      color: #000;
+      border-color: #fff;
     }
 
-    .entry-action.edit {
-      background: rgba(0, 255, 247, 0.9);
-    }
-
-    .entry-action.edit:hover {
-      background: rgba(0, 255, 247, 1);
-    }
-    
+    /* Boutons Voir tout / Masquer */
     .seeall, .hideall {
-      display: block;
-      margin: 1.1rem auto 0;
-      background: #111;
-      border: 2px solid #00fff7;
-      color: #00fff7;
-      border-radius: 12px;
-      padding: 0.5rem 1.4rem;
-      box-shadow: 0 0 8px #00fff7;
-      font-family: "Orbitron", monospace;
-      font-size: clamp(0.9rem, 2.5vw, 1rem);
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      width: auto;
-      min-width: 120px;
+      background: transparent;
+      color: #666;
+      border: 1px solid #333;
+      margin-top: 1.5rem;
+      font-weight: normal;
+      font-size: 0.85rem;
     }
     
     .seeall:hover, .hideall:hover {
-      background: #00fff7;
-      color: #18181a;
-    }
-    
-    ::selection {
-      background: #ff4ecd;
+      border-color: #666;
       color: #fff;
+      opacity: 1;
     }
-    
-    /* Scrollbar styling */
-    .feedbacks::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .feedbacks::-webkit-scrollbar-track {
-      background: rgba(255, 78, 205, 0.1);
-      border-radius: 4px;
-    }
-    
-    .feedbacks::-webkit-scrollbar-thumb {
-      background: #ff4ecd;
-      border-radius: 4px;
-    }
-    
-    .feedbacks::-webkit-scrollbar-thumb:hover {
-      background: #00fff7;
-    }
-    
-    @media (min-width: 769px) {
-      body { padding: 20px; }
-      .panel { padding: 3rem; max-width: 95%; margin: 2rem auto; }
-      .feedbacks { max-height: 60vh; padding: 2rem; }
-      textarea { min-height: 120px; }
-      .links { margin-bottom: 2rem; }
-    }
-    
-    @media (max-width: 768px) and (min-width: 481px) {
-      .panel { max-width: 90%; }
-    }
-    
+
     @media (max-width: 480px) {
-      body { padding: 5px; }
-      .panel { padding: 1rem; border-radius: 12px; margin-top: 0.5rem; max-width: 420px; }
-      h1 { margin: 0.5rem 0; letter-spacing: 1px; }
-      .links { gap: 0.5rem; margin-bottom: 0.8rem; }
-      textarea, input[type="file"] { padding: 0.5rem; font-size: 0.9rem; }
-      button { padding: 0.6rem 0.8rem; margin: 0.5rem 0; }
-      .feedbacks { padding: 0.8rem; max-height: 40vh; }
-      .entry { padding-left: 0.6rem; margin-bottom: 0.8rem; }
-      .entry-actions { top: 4px; right: 4px; gap: 4px; }
-      .entry-action { width: 20px; height: 20px; font-size: 10px; }
-      .seeall { padding: 0.4rem 1rem; margin: 0.8rem auto 0; }
+      body { padding: 1rem; }
+      .entry-actions { display: flex; opacity: 0.5; } /* Toujours visible sur mobile */
     }
-    
-    @media (max-width: 320px) {
-      body { padding: 2px; }
-      .panel { padding: 0.8rem; border-radius: 8px; }
-      .links a { font-size: 0.8rem; }
-      textarea { min-height: 60px; }
-      .feedbacks { max-height: 35vh; }
-    }
-    
-    * { max-width: 100%; overflow-wrap: break-word; }
   </style>
 
   <script>
-    // CORRECTION : On récupère createClient depuis la variable globale supabase
+    // Récupération du client Supabase global
     const { createClient } = supabase;
 
-    // Vos clés (inchangées)
+    // Configuration
     const SUPABASE_URL = "https://xcawojxvtxdcnwkhywmn.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI";
     const IMGBB_API_KEY = "78e05cd74f26e3e31a04ba7366739c98";
@@ -303,19 +219,22 @@
     }
 
     async function loadFeedbacks(limit = 3) {
-      let query = sb // Changé supabase par sb pour cohérence
+      let query = sb
         .from("Feedback")
         .select("*")
         .order("created_at", { ascending: false });
+      
       if (!showingAll) query = query.limit(limit);
+      
       const { data, error } = await query;
       if (error) {
-        console.error("Erreur chargement feedback:", error);
-        // On évite les alertes bloquantes au chargement si possible, juste log
+        console.error("Erreur chargement:", error);
         return;
       }
       feedbacks = data || [];
       render();
+      
+      // Gestion visibilité boutons
       const seeAllBtn = document.getElementById("seeall");
       const hideAllBtn = document.getElementById("hideall");
       
@@ -326,7 +245,7 @@
     function render() {
       const box = document.getElementById("feedbacks");
       if (!feedbacks.length) {
-        box.innerHTML = "<div style='color:#ff4ecd;'>Aucun feedback enregistré.</div>";
+        box.innerHTML = "<div style='color:#444; text-align:center; padding: 2rem 0;'>Aucun feedback pour le moment.</div>";
         return;
       }
       box.innerHTML = feedbacks
@@ -334,20 +253,24 @@
           (fb, index) => `
         <div class="entry" data-index="${index}">
           <div class="entry-actions">
-            <button class="entry-action edit" onclick="editFeedback(${index})" title="Éditer">✏️</button>
-            <button class="entry-action delete" onclick="deleteFeedback(${index})" title="Supprimer">❌</button>
+            <button class="entry-action edit" onclick="editFeedback(${index})" title="Éditer">✎</button>
+            <button class="entry-action delete" onclick="deleteFeedback(${index})" title="Supprimer">×</button>
           </div>
-          <div class="datetime">${new Date(fb.created_at).toLocaleString()}</div>
+          <div class="datetime">${new Date(fb.created_at).toLocaleString('fr-FR')}</div>
+          <div class="entry-content">
           ${
             isImageUrl(fb.content)
-              ? `<img src="${fb.content}" alt="Feedback manuscrit" loading="lazy">`
+              ? `<img src="${fb.content}" alt="Feedback image" loading="lazy">`
               : `<div>${fb.content.replace(/\n/g, "<br>")}</div>`
           }
+          </div>
         </div>
       `
         )
         .join("");
     }
+
+    // --- Logique identique à la version précédente ---
 
     window.editFeedback = async function(index) {
       const feedback = feedbacks[index];
@@ -363,7 +286,7 @@
       document.getElementById("content").focus();
 
       const submitBtn = document.querySelector("#form button[type='submit']");
-      submitBtn.textContent = "💾 Mettre à jour";
+      submitBtn.textContent = "Mettre à jour";
 
       document.addEventListener("click", cancelEditOnClickOutside);
     }
@@ -379,7 +302,7 @@
       document.getElementById("content").value = "";
       document.getElementById("img").value = "";
       const submitBtn = document.querySelector("#form button[type='submit']");
-      if(submitBtn) submitBtn.textContent = "💾 Sauvegarder feedback";
+      if(submitBtn) submitBtn.textContent = "Enregistrer";
       document.removeEventListener("click", cancelEditOnClickOutside);
     }
 
@@ -402,7 +325,7 @@
         loadFeedbacks();
       } catch (error) {
         console.error("Erreur suppression:", error);
-        alert("Erreur suppression");
+        alert("Erreur lors de la suppression");
       }
     }
 
@@ -447,7 +370,7 @@
             return;
           }
         } else if (!text) {
-          alert("Ajoute un texte ou une image !");
+          alert("Veuillez entrer du texte ou choisir une image.");
           return;
         }
 
@@ -504,23 +427,27 @@
   </script>
 </head>
 <body>
-  <h1>📊 Feedback du Soir</h1>
-    <div class="panel">
-      <div class="links">
-        <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">📝 SimpleTabHTML</a>
-        <a href="https://chatgpt.com" target="_blank">🎤 ChatGPT</a>
-      </div>
+  <div class="panel">
+    <h1>Feedback Quotidien</h1>
+    
+    <div class="links">
+      <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">SimpleTabHTML</a>
+      <a href="https://chatgpt.com" target="_blank">ChatGPT</a>
+    </div>
 
     <form id="form" autocomplete="off">
-      <label for="content">Ton feedback (texte) :</label>
+      <label for="content">NOUVEAU FEEDBACK</label>
       <textarea id="content" rows="3" placeholder="Comment s'est passée ta journée ?"></textarea>
-      <label for="img">Ou upload une image :</label>
+      
+      <label for="img">IMAGE (OPTIONNEL)</label>
       <input type="file" id="img" accept="image/png, image/jpeg, image/webp" />
-      <button type="submit">💾 Sauvegarder feedback</button>
+      
+      <button type="submit">Enregistrer</button>
     </form>
+
     <div class="feedbacks" id="feedbacks"></div>
-    <button class="seeall" id="seeall" style="display: none">Voir tout</button>
-    <button class="hideall" id="hideall" style="display: none">Masquer</button>
+    <button class="seeall" id="seeall" style="display: none">Voir plus</button>
+    <button class="hideall" id="hideall" style="display: none">Voir moins</button>
   </div>
 </body>
 </html>
