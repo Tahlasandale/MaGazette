@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface d'Insertion Supabase</title>
+    <!-- Chargement de Tailwind CSS pour un style moderne et mobile-first -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importation du client Supabase JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Configuration de la police Inter et styles de base */
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fb; }
+        .card { background-color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        textarea { resize: vertical; }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="max-w-xl mx-auto p-4 sm:p-6 lg:p-8">
+        <h1 class="text-3xl font-extrabold text-gray-900 mb-6 border-b pb-2">
+            📝 Enregistreur de Texte Supabase
+        </h1>
+        
+        <!-- Bloc de Connexion Supabase -->
+        <div id="credentials-card" class="card rounded-xl p-6 mb-8 border border-green-300">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                1. Configuration Supabase (Clés Intégrées)
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">
+                La connexion utilise les identifiants codés en dur (Anon Key).
+            </p>
+
+            <div class="mb-4">
+                <label for="supabase-url" class="block text-sm font-medium text-gray-700">URL du Projet Supabase</label>
+                <!-- Champs remplis et désactivés -->
+                <input type="text" id="supabase-url" value="https://xcawojxvtxdcnwkhywmn.supabase.co" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-gray-100" disabled>
+            </div>
+            
+            <div class="mb-4">
+                <label for="supabase-key" class="block text-sm font-medium text-gray-700">Clé Anon Publique (Anon Key)</label>
+                 <!-- Champs remplis et désactivés -->
+                <input type="password" id="supabase-key" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-gray-100" disabled>
+            </div>
+
+            <button id="save-creds-button" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-bold transition duration-200" disabled>
+                Connexion Automatique OK
+            </button>
+        </div>
+
+        <!-- Bloc d'Insertion de Texte (Affiché automatiquement) -->
+        <div id="insertion-card" class="card rounded-xl p-6 mb-8 hidden">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                2. Saisir et Envoyer le Texte (Table: 'text')
+            </h2>
+
+            <div id="connexion-status" class="mb-4 p-3 rounded-lg text-sm font-medium bg-green-100 text-green-700">
+                Statut : Connexion en cours...
+            </div>
+
+            <textarea id="content-input" rows="6" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="Écrivez votre texte à insérer..."></textarea>
+            
+            <button id="submit-button" class="mt-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-bold hover:bg-indigo-700 transition duration-200 shadow-md disabled:bg-indigo-300" disabled>
+                Insérer
+            </button>
+            <div id="message-box" class="mt-3 text-sm font-medium"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- IDENTIFIANTS CODÉS EN DUR ---
+        // Utilisés directement pour l'initialisation du client Supabase
+        const HARDCODED_URL = 'https://xcawojxvtxdcnwkhywmn.supabase.co';
+        const HARDCODED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI';
+        // ---------------------------------
+        
+        const TABLE_NAME = 'text';
+
+        // Éléments du DOM
+        const urlInput = document.getElementById('supabase-url');
+        const keyInput = document.getElementById('supabase-key');
+        const submitButton = document.getElementById('submit-button');
+        const contentInput = document.getElementById('content-input');
+        const messageBox = document.getElementById('message-box');
+        const insertionCard = document.getElementById('insertion-card');
+        const connexionStatus = document.getElementById('connexion-status');
+        
+        let supabase = null;
+
+        /**
+         * Affiche un message d'état à l'utilisateur.
+         */
+        function displayMessage(message, type = 'info') {
+            let bgColor, textColor;
+            switch (type) {
+                case 'success':
+                    bgColor = 'bg-green-100';
+                    textColor = 'text-green-700';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-100';
+                    textColor = 'text-red-700';
+                    break;
+                case 'info':
+                default:
+                    bgColor = 'bg-blue-100';
+                    textColor = 'text-blue-700';
+                    break;
+            }
+            messageBox.className = `mt-3 p-3 rounded-lg ${bgColor} ${textColor} text-sm font-medium`;
+            messageBox.textContent = message;
+        }
+
+        /**
+         * Tente d'initialiser le client Supabase et met à jour l'interface.
+         * @param {string} url - URL du projet Supabase.
+         * @param {string} key - Clé Anon Supabase.
+         */
+        function initializeSupabase(url, key) {
+            if (!url || !key) {
+                connexionStatus.textContent = "Erreur: Identifiants manquants.";
+                return;
+            }
+
+            try {
+                // Utilise la fonction createClient de la bibliothèque Supabase importée
+                supabase = window.supabase.createClient(url, key);
+                
+                // Met à jour la carte de connexion
+                insertionCard.classList.remove('hidden');
+                connexionStatus.textContent = `Statut : Connecté à Supabase (${url.split('//')[1].split('.')[0]}).`;
+                
+                // Active l'insertion et attache l'événement
+                submitButton.disabled = false;
+                submitButton.addEventListener('click', insertData);
+                displayMessage("Connexion réussie. Vous pouvez insérer votre texte.", 'success');
+
+            } catch (error) {
+                console.error("Erreur d'initialisation Supabase:", error);
+                connexionStatus.textContent = "Statut : Échec de connexion.";
+                displayMessage(`Erreur de connexion : ${error.message}`, 'error');
+                supabase = null;
+            }
+        }
+
+        /**
+         * Insère le texte dans la table Supabase 'text'.
+         * Schéma attendu : id, created_at, content
+         */
+        async function insertData() {
+            if (!supabase) {
+                displayMessage("Erreur : Non connecté à Supabase.", 'error');
+                return;
+            }
+
+            const content = contentInput.value.trim();
+            if (content.length === 0) {
+                displayMessage("Veuillez saisir du texte à insérer.", 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = "Insertion en cours...";
+            displayMessage("Envoi des données...", 'info');
+
+            try {
+                // Insertion dans la table 'text'.
+                // Nous insérons uniquement 'content' et laissons les colonnes 'id' et 'created_at'
+                // être gérées automatiquement par le schéma Supabase.
+                const { data, error } = await supabase
+                    .from(TABLE_NAME)
+                    .insert([
+                        { 
+                            content: content
+                        }
+                    ])
+                    .select(); // Reçoit les données insérées
+
+                if (error) {
+                    // Message d'erreur personnalisé en cas de problème de permission (RLS)
+                    if (error.code && (error.code === 'PGRST201' || error.message.includes('permission denied'))) {
+                         throw new Error("Échec de la permission RLS. Veuillez vérifier les Règles de Sécurité au Niveau des Lignes pour le rôle 'anon'.");
+                    }
+                    throw new Error(error.message);
+                }
+                
+                displayMessage(`Succès ! Texte inséré (ID: ${data[0].id || 'N/A'}).`, 'success');
+                contentInput.value = ''; // Efface le champ après succès
+
+            } catch (error) {
+                console.error("Erreur d'insertion Supabase:", error);
+                displayMessage(`Échec de l'insertion : ${error.message}`, 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Insérer";
+            }
+        }
+
+        // --- GESTION DES ÉVÉNEMENTS ---
+        // saveCredsButton est maintenant désactivé.
+        // Au chargement, lance l'initialisation automatique
+        window.onload = () => initializeSupabase(HARDCODED_URL, HARDCODED_KEY);
+
+    </script>
+</body>
+</html>
