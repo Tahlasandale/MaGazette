@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Feedback Minimaliste</title>
+  <title>Feedback Quotidien</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <!-- Chargement global de Supabase -->
@@ -92,7 +92,6 @@
       resize: vertical;
     }
 
-    /* Input file style hack pour rester minimaliste */
     input[type="file"] {
       padding: 0.6rem;
       font-size: 0.85rem;
@@ -112,14 +111,49 @@
       transition: opacity 0.2s;
     }
     
-    button:hover {
-      opacity: 0.9;
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Overlay de chargement pour n8n */
+    #loader {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #333;
+      border-top: 2px solid #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .countdown-text {
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .sub-text {
+      color: #666;
+      font-size: 0.85rem;
     }
 
     /* Liste des feedbacks */
-    .feedbacks {
-      border-top: 1px solid #333;
-    }
+    .feedbacks { border-top: 1px solid #333; }
 
     .entry {
       border-bottom: 1px solid #333;
@@ -134,78 +168,40 @@
       font-family: monospace;
     }
 
-    .entry-content {
-      line-height: 1.5;
-      color: #ddd;
-    }
+    .entry-content { line-height: 1.5; color: #ddd; }
+    .entry img { max-width: 100%; border-radius: 4px; border: 1px solid #333; margin-top: 0.5rem; }
 
-    .entry img {
-      max-width: 100%;
-      border-radius: 4px;
-      border: 1px solid #333;
-      margin-top: 0.5rem;
-    }
-
-    /* Actions (Edit/Delete) - Apparaissent au survol comme sur la todo list */
     .entry-actions {
-      position: absolute;
-      top: 1.5rem;
-      right: 0;
-      display: none;
-      gap: 0.5rem;
+      position: absolute; top: 1.5rem; right: 0;
+      display: none; gap: 0.5rem;
     }
 
-    .entry:hover .entry-actions {
-      display: flex;
-    }
+    .entry:hover .entry-actions { display: flex; }
 
     .entry-action {
-      background: #222;
-      color: #fff;
-      border: 1px solid #333;
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      padding: 0;
+      background: #222; color: #fff; border: 1px solid #333;
+      width: 28px; height: 28px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; padding: 0;
     }
 
-    .entry-action:hover {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
+    .entry-action:hover { background: #fff; color: #000; border-color: #fff; }
 
-    /* Boutons Voir tout / Masquer */
     .seeall, .hideall {
-      background: transparent;
-      color: #666;
-      border: 1px solid #333;
-      margin-top: 1.5rem;
-      font-weight: normal;
-      font-size: 0.85rem;
+      background: transparent; color: #666; border: 1px solid #333;
+      margin-top: 1.5rem; font-weight: normal; font-size: 0.85rem;
     }
     
-    .seeall:hover, .hideall:hover {
-      border-color: #666;
-      color: #fff;
-      opacity: 1;
-    }
+    .seeall:hover, .hideall:hover { border-color: #666; color: #fff; opacity: 1; }
 
     @media (max-width: 480px) {
       body { padding: 1rem; }
-      .entry-actions { display: flex; opacity: 0.5; } /* Toujours visible sur mobile */
+      .entry-actions { display: flex; opacity: 0.5; }
     }
   </style>
 
   <script>
-    // Récupération du client Supabase global
     const { createClient } = supabase;
-
-    // Configuration
     const SUPABASE_URL = "https://xcawojxvtxdcnwkhywmn.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjYXdvanh2dHhkY253a2h5d21uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MTI1MzMsImV4cCI6MjA3MjI4ODUzM30.gF46vM9cKso-hDKZODrqDwZOAhQGjPlHqPhBn9si9EI";
     const IMGBB_API_KEY = "78e05cd74f26e3e31a04ba7366739c98";
@@ -219,28 +215,16 @@
     }
 
     async function loadFeedbacks(limit = 3) {
-      // CORRECTION : On cible la table principale 'Feedback' (Majuscule Singulier) pour l'affichage
-      let query = sb
-        .from("Feedback")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
+      let query = sb.from("Feedback").select("*").order("created_at", { ascending: false });
       if (!showingAll) query = query.limit(limit);
       
       const { data, error } = await query;
-      if (error) {
-        console.error("Erreur chargement:", error);
-        return;
-      }
+      if (error) return console.error("Erreur chargement:", error);
       feedbacks = data || [];
       render();
       
-      // Gestion visibilité boutons
-      const seeAllBtn = document.getElementById("seeall");
-      const hideAllBtn = document.getElementById("hideall");
-      
-      if(seeAllBtn) seeAllBtn.style.display = showingAll ? "none" : (feedbacks.length === limit ? "block" : "none");
-      if(hideAllBtn) hideAllBtn.style.display = showingAll ? "block" : "none";
+      document.getElementById("seeall").style.display = showingAll ? "none" : (feedbacks.length >= limit ? "block" : "none");
+      document.getElementById("hideall").style.display = showingAll ? "block" : "none";
     }
 
     function render() {
@@ -249,9 +233,7 @@
         box.innerHTML = "<div style='color:#444; text-align:center; padding: 2rem 0;'>Aucun feedback pour le moment.</div>";
         return;
       }
-      box.innerHTML = feedbacks
-        .map(
-          (fb, index) => `
+      box.innerHTML = feedbacks.map((fb, index) => `
         <div class="entry" data-index="${index}">
           <div class="entry-actions">
             <button class="entry-action edit" onclick="editFeedback(${index})" title="Éditer">✎</button>
@@ -259,104 +241,29 @@
           </div>
           <div class="datetime">${new Date(fb.created_at).toLocaleString('fr-FR')}</div>
           <div class="entry-content">
-          ${
-            isImageUrl(fb.content)
-              ? `<img src="${fb.content}" alt="Feedback image" loading="lazy">`
-              : `<div>${fb.content.replace(/\n/g, "<br>")}</div>`
-          }
+            ${isImageUrl(fb.content) ? `<img src="${fb.content}" loading="lazy">` : `<div>${fb.content.replace(/\n/g, "<br>")}</div>`}
           </div>
         </div>
-      `
-        )
-        .join("");
+      `).join("");
     }
 
-    window.editFeedback = async function(index) {
-      const feedback = feedbacks[index];
-      editingIndex = index;
+    function showN8nLoader() {
+      const loader = document.getElementById("loader");
+      const countdownEl = document.getElementById("countdown");
+      let timeLeft = 60;
+      
+      loader.style.display = "flex";
+      countdownEl.innerText = timeLeft;
 
-      if (isImageUrl(feedback.content)) {
-        alert("L'édition d'images n'est pas encore supportée. Supprimez et recréez.");
-        editingIndex = -1;
-        return;
-      }
-
-      document.getElementById("content").value = feedback.content.replace(/<br>/g, "\n");
-      document.getElementById("content").focus();
-
-      const submitBtn = document.querySelector("#form button[type='submit']");
-      submitBtn.textContent = "Mettre à jour";
-
-      document.addEventListener("click", cancelEditOnClickOutside);
-    }
-
-    function cancelEditOnClickOutside(e) {
-      if (!e.target.closest("#form") && !e.target.closest(".entry")) {
-        cancelEdit();
-      }
-    }
-
-    function cancelEdit() {
-      editingIndex = -1;
-      document.getElementById("content").value = "";
-      document.getElementById("img").value = "";
-      const submitBtn = document.querySelector("#form button[type='submit']");
-      if(submitBtn) submitBtn.textContent = "Enregistrer";
-      document.removeEventListener("click", cancelEditOnClickOutside);
-    }
-
-    window.deleteFeedback = async function(index) {
-      if (!confirm("Supprimer ce feedback ?")) return;
-
-      const feedback = feedbacks[index];
-      console.log('Delete attempt:', { index, feedback });
-      try {
-        // CORRECTION : Suppression explicite dans la table 'Feedback'
-        let deleteQuery = sb.from("Feedback").delete();
-
-        if (feedback.id !== undefined && feedback.id !== null) {
-          console.log('Deleting by id:', feedback.id);
-          deleteQuery = deleteQuery.eq("id", feedback.id);
-        } else {
-          const createdAtISO = new Date(feedback.created_at).toISOString();
-          console.log('Deleting by created_at and content:', createdAtISO, feedback.content);
-          deleteQuery = deleteQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
+      const timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          loader.style.display = "none";
+          loadFeedbacks();
         }
-
-        const { error } = await deleteQuery;
-        console.log('Delete result:', { error });
-        if (error) throw error;
-        loadFeedbacks();
-      } catch (error) {
-        console.error("Erreur suppression:", error);
-        alert("Erreur lors de la suppression : " + error.message);
-      }
-    }
-
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    async function uploadImageToImgBB(file) {
-      const base64Image = await toBase64(file);
-      const formData = new FormData();
-      formData.append("image", base64Image);
-
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error("Erreur upload ImgBB");
-      const data = await response.json();
-      if (!data.success) throw new Error("Erreur upload ImgBB");
-
-      return data.data.url;
+      }, 1000);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -365,87 +272,63 @@
         const text = document.getElementById("content").value.trim();
         const imageInput = document.getElementById("img").files[0];
         let content = text;
+        const isTextOnly = !imageInput && text;
 
-        // Gestion de l'upload image
         if (imageInput) {
           try {
             content = await uploadImageToImgBB(imageInput);
-          } catch (err) {
-            alert("Erreur upload image : " + err.message);
-            return;
-          }
+          } catch (err) { alert(err.message); return; }
         } else if (!text) {
-          alert("Veuillez entrer du texte ou choisir une image.");
-          return;
+          alert("Entrez du texte ou une image."); return;
         }
 
-        if (editingIndex >= 0) {
-          // Mode édition : Update sur 'Feedback'
-          const feedback = feedbacks[editingIndex];
-          try {
-            let updateQuery = sb.from("Feedback").update({ content });
+        const table = imageInput ? "Feedback" : "text";
+        const { error } = await sb.from(table).insert([{ content }]);
 
-            if (feedback.id !== undefined && feedback.id !== null) {
-              updateQuery = updateQuery.eq("id", feedback.id);
-            } else {
-              const createdAtISO = new Date(feedback.created_at).toISOString();
-              updateQuery = updateQuery.eq("created_at", createdAtISO).eq("content", feedback.content);
-            }
-
-            const { error } = await updateQuery;
-            if (error) throw error;
-          } catch (error) {
-            console.error("Erreur mise à jour:", error);
-            alert("Erreur mise à jour");
-            return;
-          }
+        if (error) {
+          alert("Erreur: " + error.message);
         } else {
-          // Mode ajout
-          let error;
-          
-          if (imageInput) {
-            // IMAGE -> Table 'Feedback'
-            const res = await sb.from("Feedback").insert([{ content }]); 
-            error = res.error;
+          document.getElementById("form").reset();
+          if (isTextOnly) {
+            // Si c'est du texte, on attend le traitement n8n
+            showN8nLoader();
           } else {
-            // TEXTE -> Table 'text' (Spécifique, mais attention : ils ne seront pas visibles si on ne charge que 'Feedback')
-            const res = await sb.from("text").insert([{ content }]);
-            error = res.error;
-          }
-
-          if (error) {
-            console.error("Erreur ajout:", error);
-            alert("Erreur ajout: " + error.message);
-            return;
+            // Si c'est une image (pas de n8n), on rafraîchit direct
+            loadFeedbacks();
           }
         }
-
-        document.getElementById("form").reset();
-        cancelEdit();
-        showingAll = false;
-        loadFeedbacks();
       };
 
-      const seeAllBtn = document.getElementById("seeall");
-      const hideAllBtn = document.getElementById("hideall");
+      async function uploadImageToImgBB(file) {
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
+          reader.readAsDataURL(file);
+          reader.onload = async () => {
+            const base64 = reader.result.split(',')[1];
+            const formData = new FormData();
+            formData.append("image", base64);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+            const data = await res.json();
+            data.success ? resolve(data.data.url) : reject(new Error("Upload failed"));
+          };
+        });
+      }
 
-      if(seeAllBtn) seeAllBtn.onclick = () => {
-        showingAll = true;
-        loadFeedbacks();
-      };
-      if(hideAllBtn) hideAllBtn.onclick = () => {
-        showingAll = false;
-        loadFeedbacks();
-      };
-      
+      document.getElementById("seeall").onclick = () => { showingAll = true; loadFeedbacks(); };
+      document.getElementById("hideall").onclick = () => { showingAll = false; loadFeedbacks(); };
       loadFeedbacks();
     });
   </script>
 </head>
 <body>
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="countdown-text">Analyse en cours... <span id="countdown">60</span>s</div>
+    <div class="sub-text">L'IA structure ton feedback quotidien.</div>
+  </div>
+
   <div class="panel">
     <h1>Feedback Quotidien</h1>
-    
     <div class="links">
       <a href="https://tahlasandale.github.io/MaGazette/SimpleTabHTML.html" target="_blank">SimpleTabHTML</a>
       <a href="https://chatgpt.com" target="_blank">ChatGPT</a>
@@ -454,10 +337,8 @@
     <form id="form" autocomplete="off">
       <label for="content">NOUVEAU FEEDBACK</label>
       <textarea id="content" rows="3" placeholder="Comment s'est passée ta journée ?"></textarea>
-      
       <label for="img">IMAGE (OPTIONNEL)</label>
       <input type="file" id="img" accept="image/png, image/jpeg, image/webp" />
-      
       <button type="submit">Enregistrer</button>
     </form>
 
